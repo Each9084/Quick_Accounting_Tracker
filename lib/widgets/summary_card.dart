@@ -12,7 +12,7 @@ class SummaryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    //注意这里的expense本身就是负的 最终 = 收入(正)+支出(负),自动减了
+    //注意这里是负的 最终 = 收入(正)+支出(负),自动减了
     final total = income + expense;
     return Container(
       width: double.infinity,
