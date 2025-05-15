@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:accounting_tracker/models/billCategory.dart';
+import 'package:accounting_tracker/screens/add_bill_page.dart';
 import 'package:accounting_tracker/widgets/new_bill_input.dart';
 import 'package:accounting_tracker/widgets/summary_card.dart';
 import 'package:flutter/material.dart';
@@ -34,20 +35,20 @@ class _BillHomePageState extends State<BillHomePage> {
     });
   }*/
 
-  //打开添加的dialog
+  //打开添加的dialog (废弃,我们采用进入新的页面的方式来完成)
   void _openAddBillDialog() {
     showDialog(
         context: context,
         builder: (ctx) {
           return NewBillInput(onSubmit: (String? note, double amount,
-              BillCategory billCategory, DateTime date,bool isIncome) {
+              BillCategory billCategory, DateTime date, bool isIncome) {
             final newBill = Bill(
-                id: DateTime.now().millisecondsSinceEpoch.toString(),
-                amount: amount,
-                note: note,
-                date: date,
-                billCategory: billCategory,
-                isIncome: isIncome,
+              id: DateTime.now().millisecondsSinceEpoch.toString(),
+              amount: amount,
+              note: note,
+              date: date,
+              billCategory: billCategory,
+              isIncome: isIncome,
             );
             setState(() {
               _bills.insert(0, newBill);
@@ -56,7 +57,13 @@ class _BillHomePageState extends State<BillHomePage> {
         });
   }
 
-
+  void _openAddBillPage() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => AddBillPage(),
+      ),
+    );
+  }
 
   //删除图标 -删除功能
   void _deleteBill(String id) {
@@ -75,9 +82,9 @@ class _BillHomePageState extends State<BillHomePage> {
 
   double _calculateIncome() {
     double total = 0.0;
-    for(final bill in _bills){
-      if(bill.isIncome){
-        total +=bill.amount;
+    for (final bill in _bills) {
+      if (bill.isIncome) {
+        total += bill.amount;
       }
     }
     return total;
@@ -85,10 +92,10 @@ class _BillHomePageState extends State<BillHomePage> {
 
   //计算支出用于显示在卡片右下角的支出逻辑
   //注意这里是负的 最终 = 收入(正)+支出(负),自动减了
-  double _calculateExpense(){
+  double _calculateExpense() {
     double total = 0.0;
-    for(final bill in _bills){
-      if(!bill.isIncome){
+    for (final bill in _bills) {
+      if (!bill.isIncome) {
         total -= bill.amount;
       }
     }
@@ -104,7 +111,7 @@ class _BillHomePageState extends State<BillHomePage> {
           //右上角的添加按钮
           IconButton(
             //这里也从_addBill替换为_openAddBillDialog
-            onPressed: _openAddBillDialog,
+            onPressed: _openAddBillPage,
             icon: const Icon(Icons.add),
           ),
         ],
