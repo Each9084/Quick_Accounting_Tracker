@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 class NewBillInput extends StatefulWidget {
   // 回调函数字段 onSubmit,
   // 当用户填写完表单点击“确定”按钮后，把输入的内容传回给外层（即主页面），由外层决定如何处理这些数据。
-  final Function(String? note, double amount, BillCategory category, DateTime date)
+  final Function(String? note, double amount, BillCategory category, DateTime date,bool isIncome)
       onSubmit;
 
   //你在 NewBillInput 的构造函数中要求外部传进来一个 onSubmit 函数：
@@ -19,6 +19,7 @@ class NewBillInput extends StatefulWidget {
 class _NewBillInputState extends State<NewBillInput> {
   final _noteController = TextEditingController();
   final _amountController = TextEditingController();
+  bool _isIncome = false; //默认支出
 
   late DateTime _selectedDate = DateTime.now();
 
@@ -65,7 +66,7 @@ class _NewBillInputState extends State<NewBillInput> {
     //在 Flutter 的 State 类中，有个内置变量叫 widget
     //它指的是当前 State 对应的 StatefulWidget 实例本身。
     //所以 widget.onSubmit 表示：访问你组件外部传进来的回调函数。
-    widget.onSubmit(note, amount, _selectedCategory, _selectedDate);
+    widget.onSubmit(note, amount, _selectedCategory, _selectedDate,_isIncome);
     Navigator.of(context).pop(); //关闭对话框
   }
 
@@ -146,6 +147,14 @@ class _NewBillInputState extends State<NewBillInput> {
                   _selectedCategory = value!;
                 });
               }),
+          SwitchListTile(value: _isIncome, onChanged: (value){
+            setState(() {
+              _isIncome = value;
+            });
+          },
+          title: Text("收入"),
+          subtitle: Text("切换为收入/支出"),
+          activeColor: Colors.green,),
           Row(
             children: [
               Expanded(
