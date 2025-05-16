@@ -149,10 +149,10 @@ class _AddBillPageState extends State<AddBillPage> {
           const Divider(),
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12,vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               child: GridView.count(
                 //每一行有几个内容
-                crossAxisCount: 5,
+                crossAxisCount: 4,
                 //每两个行之间的间距
                 mainAxisSpacing: 10,
                 //每两个列之间的间距
@@ -166,34 +166,62 @@ class _AddBillPageState extends State<AddBillPage> {
                         _selectedCategory = category;
                       });
                     },
-                    child: Container(
+                    child: AnimatedContainer(
+                      duration: Duration(milliseconds: 200),
+                      curve: Curves.easeInOut,
                       decoration: BoxDecoration(
-                        color:
-                            isSelected ? Colors.blueAccent : Colors.transparent,
+                        color: isSelected ? Colors.blue.shade200 : Colors.white,
                         border: Border.all(
                           color: isSelected
-                              ? Colors.yellowAccent
-                              : Colors.grey.shade400,
-                          width: 2,
+                              ? Colors.blueAccent
+                              : Colors.grey.shade300,
+                          width: 1,
                         ),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      padding: EdgeInsets.symmetric(vertical: 8),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            category.iconData,
-                            size: 26,
-                          ),
-                          SizedBox(
-                            height: 4,
-                          ),
-                          Text(
-                            category.name,
-                            style: TextStyle(fontSize: 13),
-                          ),
+                        borderRadius: BorderRadius.circular(14),
+                        boxShadow: [
+                          if (isSelected)
+                            BoxShadow(
+                              color: Colors.blueAccent,
+                              blurRadius: 6,
+                              offset: Offset(0, 3),
+                            )
+                          else
+                            BoxShadow(
+                              color: Colors.black12,
+                              blurRadius: 4,
+                              offset: Offset(1, 2),
+                            )
                         ],
+                      ),
+                      padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+                      child: AnimatedScale(
+                        //选中放大1.2
+                        scale: isSelected ? 1.2 : 1.0,
+                        duration: Duration(milliseconds: 150),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              category.iconData,
+                              size: 26,
+                              color: isSelected
+                                  ? Colors.blueAccent
+                                  : Colors.black87,
+                            ),
+                            SizedBox(
+                              height: 4,
+                            ),
+                            Text(
+                              category.name,
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: isSelected
+                                    ? Colors.blueAccent
+                                    : Colors.black87,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   );
