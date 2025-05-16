@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+//展示主页的统计金额
 class SummaryCard extends StatelessWidget {
   final double income;
   final double expense;
