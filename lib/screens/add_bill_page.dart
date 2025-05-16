@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../models/billCategory.dart';
+
 class AddBillPage extends StatefulWidget {
   const AddBillPage({super.key});
 
@@ -10,6 +12,31 @@ class AddBillPage extends StatefulWidget {
 class _AddBillPageState extends State<AddBillPage> {
   bool isIncome = false;
   DateTime _selectedDate = DateTime.now();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _selectedCategory = _expenseCategories[0];
+  }
+
+  final List<BillCategory> _expenseCategories = [
+    BillCategory(name: "餐饮", iconData: Icons.fastfood_outlined),
+    BillCategory(name: "公交", iconData: Icons.directions_bus_filled_outlined),
+    BillCategory(name: "购物", iconData: Icons.shopping_cart_outlined),
+    BillCategory(name: "娱乐", iconData: Icons.sports_baseball_outlined),
+    BillCategory(name: "其他", iconData: Icons.miscellaneous_services_outlined),
+  ];
+
+  final List<BillCategory> _incomeCategories = [
+    BillCategory(name: "工资", iconData: Icons.wallet),
+    BillCategory(name: "兼职", iconData: Icons.work_outline),
+    BillCategory(name: "理财", iconData: Icons.savings_outlined),
+    BillCategory(name: "其他", iconData: Icons.miscellaneous_services_outlined),
+  ];
+
+  //选中的分类
+  late BillCategory _selectedCategory;
 
   //选择年月日
   void _pickDate() async {
@@ -42,6 +69,7 @@ class _AddBillPageState extends State<AddBillPage> {
     });
   }
 
+  //负责格式化 右上角,我自己定义的是只展示
   String _formatDateTime(DateTime dt) {
     final year = dt.year.toString().padLeft(2, "0");
     final month = dt.month.toString().padLeft(2, "0");
@@ -72,8 +100,11 @@ class _AddBillPageState extends State<AddBillPage> {
                 Expanded(
                   child: Center(
                     child: ToggleButtons(
-                      isSelected: [isIncome, !isIncome],
-                      children: [Text("收入"), Text("支出")],
+                      isSelected: [
+                        !isIncome,
+                        isIncome,
+                      ],
+                      children: [Text("支出"), Text("收入")],
                       borderRadius: BorderRadius.circular(10),
                       selectedColor: Colors.white,
                       fillColor: Colors.blueAccent,
@@ -82,9 +113,9 @@ class _AddBillPageState extends State<AddBillPage> {
                       onPressed: (int index) {
                         setState(() {
                           if (index == 0) {
-                            isIncome = true;
-                          } else {
                             isIncome = false;
+                          } else {
+                            isIncome = true;
                           }
                         });
                       },
@@ -117,8 +148,57 @@ class _AddBillPageState extends State<AddBillPage> {
           ),
           const Divider(),
           Expanded(
-            child: Center(
-              child: Text("后续:图标分类,自定义键盘等"),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12,vertical: 8),
+              child: GridView.count(
+                //每一行有几个内容
+                crossAxisCount: 5,
+                //每两个行之间的间距
+                mainAxisSpacing: 10,
+                //每两个列之间的间距
+                crossAxisSpacing: 10,
+                children: (isIncome ? _incomeCategories : _expenseCategories)
+                    .map((category) {
+                  final isSelected = _selectedCategory.name == category.name;
+                  return GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _selectedCategory = category;
+                      });
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color:
+                            isSelected ? Colors.blueAccent : Colors.transparent,
+                        border: Border.all(
+                          color: isSelected
+                              ? Colors.yellowAccent
+                              : Colors.grey.shade400,
+                          width: 2,
+                        ),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      padding: EdgeInsets.symmetric(vertical: 8),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            category.iconData,
+                            size: 26,
+                          ),
+                          SizedBox(
+                            height: 4,
+                          ),
+                          Text(
+                            category.name,
+                            style: TextStyle(fontSize: 13),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
             ),
           ),
         ],
