@@ -1,3 +1,6 @@
+import 'package:accounting_tracker/widgets/amount_input_bar.dart';
+import 'package:accounting_tracker/widgets/custom_keyboard.dart';
+import 'package:accounting_tracker/widgets/note_input_bar.dart';
 import 'package:flutter/material.dart';
 
 import '../models/billCategory.dart';
@@ -13,6 +16,14 @@ class _AddBillPageState extends State<AddBillPage> {
   bool isIncome = false;
   DateTime _selectedDate = DateTime.now();
 
+  //选中的分类
+  late BillCategory _selectedCategory;
+
+  // 展示输入的金额文本
+  String _inputAmount = "0.00";
+
+  final TextEditingController _noteController = TextEditingController();
+
   @override
   void initState() {
     // TODO: implement initState
@@ -26,6 +37,11 @@ class _AddBillPageState extends State<AddBillPage> {
     BillCategory(name: "购物", iconData: Icons.shopping_cart_outlined),
     BillCategory(name: "娱乐", iconData: Icons.sports_baseball_outlined),
     BillCategory(name: "其他", iconData: Icons.miscellaneous_services_outlined),
+    BillCategory(name: "其他", iconData: Icons.miscellaneous_services_outlined),
+    BillCategory(name: "其他", iconData: Icons.miscellaneous_services_outlined),
+    BillCategory(name: "其他", iconData: Icons.miscellaneous_services_outlined),
+    BillCategory(name: "其他", iconData: Icons.miscellaneous_services_outlined),
+    BillCategory(name: "其他", iconData: Icons.miscellaneous_services_outlined),
   ];
 
   final List<BillCategory> _incomeCategories = [
@@ -34,9 +50,6 @@ class _AddBillPageState extends State<AddBillPage> {
     BillCategory(name: "理财", iconData: Icons.savings_outlined),
     BillCategory(name: "其他", iconData: Icons.miscellaneous_services_outlined),
   ];
-
-  //选中的分类
-  late BillCategory _selectedCategory;
 
   //选择年月日
   void _pickDate() async {
@@ -77,6 +90,42 @@ class _AddBillPageState extends State<AddBillPage> {
     final hour = dt.hour.toString().padLeft(2, "0");
     final min = dt.minute.toString().padLeft(2, "0");
     return "$month/$day";
+  }
+
+  void _handleKeyTap(String value) {
+    setState(() {
+      //防止用户输入多个小数点（例如：12.3.4 是非法的）
+      // 如果已经有一个小数点，就忽略本次输入
+      if (value == "." && _inputAmount.contains(".")) return;
+
+      //如果当前是初始状态 "0.00"，清空它，改为用户新输入的内容
+      if (_inputAmount == "0.00") {
+        _inputAmount = value == "." ? "0." : value;
+      } else {
+        //如果不是初始值，就直接把新按下的数字拼接到末尾：
+        _inputAmount += value;
+      }
+    });
+  }
+
+  void _handleDelete() {
+    setState(() {
+      if (_inputAmount.length <= 1) {
+        _inputAmount = "0.00";
+      } else {
+        //是在做 删除金额字符串的最后一个字符
+        // 也就是按下键盘上的“删除键（⌫）”时发生的逻辑。
+        _inputAmount = _inputAmount.substring(0, _inputAmount.length - 1);
+        if (_inputAmount.isEmpty) {
+          _inputAmount = "0.00";
+        }
+      }
+    });
+  }
+
+  void _handleConfirm() {
+    print("最终输入金额: $_inputAmount");
+    // 你可以在这里执行添加账单逻辑
   }
 
   @override
@@ -146,8 +195,10 @@ class _AddBillPageState extends State<AddBillPage> {
               ],
             ),
           ),
-          const Divider(),
-          Expanded(
+          AmountInputBar(category: _selectedCategory, amountText: _inputAmount),
+          //const Divider(),
+          SizedBox(
+            height: 230,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               child: GridView.count(
@@ -228,6 +279,14 @@ class _AddBillPageState extends State<AddBillPage> {
                 }).toList(),
               ),
             ),
+          ),
+          NoteInputBar(controller: _noteController),
+          SizedBox(
+            height: MediaQuery.of(context).size.height *0.5,
+            child: CustomKeyboard(
+                onKeyTap: _handleKeyTap,
+                onDelete: _handleDelete,
+                onConfirm: _handleConfirm),
           ),
         ],
       ),
