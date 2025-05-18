@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../l10n/strings.dart';
+
 class NoteInputBar extends StatelessWidget {
   final TextEditingController controller;
 
@@ -13,8 +15,8 @@ class NoteInputBar extends StatelessWidget {
     return Container(
       child: TextField(
         controller: controller,
-        decoration: const InputDecoration(
-          hintText: "请在此添加备注",
+        decoration:  InputDecoration(
+          hintText: Strings.get("note_hint"),
           border: UnderlineInputBorder(),
           contentPadding: EdgeInsets.symmetric(vertical: 4,horizontal: 8),
         ),
