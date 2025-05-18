@@ -19,53 +19,18 @@ class BillHomePage extends StatefulWidget {
 class _BillHomePageState extends State<BillHomePage> {
   final List<Bill> _bills = [];
 
-  /*这是最初的版本,测试添加固定的内容
+  DateTime _currentMonth = DateTime.now();
 
- void _addBill() {
-    final newBill = Bill(
-      id: Random().nextDouble().toString(),
-      note: 'example',
-      amount: 10.0,
-      date: DateTime.now(),
-      category: 'food',
-    );
 
-    setState(() {
-      //_bills.add(newBill); 这个样子 是往下面添加的
-      _bills.insert(0, newBill);
-    });
-  }*/
-
-  //打开添加的dialog (废弃,我们采用进入新的页面的方式来完成)
-  /* void _openAddBillDialog() {
-    showDialog(
-        context: context,
-        builder: (ctx) {
-          return NewBillInput(onSubmit: (String? note, double amount,
-              BillCategory billCategory, DateTime date, bool isIncome) {
-            final newBill = Bill(
-              id: DateTime.now().millisecondsSinceEpoch.toString(),
-              amount: amount,
-              note: note,
-              date: date,
-              billCategory: billCategory,
-              isIncome: isIncome,
-            );
-            setState(() {
-              _bills.insert(0, newBill);
-            });
-          });
-        });
-  }*/
-
-  void _openAddBillPage() async{
+  //添加账单页面
+  void _openAddBillPage() async {
     final newBill = await Navigator.of(context).push<Bill>(
       MaterialPageRoute(
         builder: (context) => AddBillPage(),
       ),
     );
 
-    if(newBill!=null){
+    if (newBill != null) {
       setState(() {
         _bills.insert(0, newBill);
       });
@@ -129,28 +94,113 @@ class _BillHomePageState extends State<BillHomePage> {
           SummaryCard(income: _calculateIncome(), expense: _calculateExpense()),
           //可滚动的账单
           Expanded(
-            child: ListView.builder(
-              itemCount: _bills.length,
-              itemBuilder: (ctx, index) {
-                final bill = _bills[index];
-                //唯一的标识符，这时可以使用 ValueKey 来保持它们的状态
-                return Dismissible(
-                  key: ValueKey(bill.id),
-                  child: BillCard(
-                    bill: bill,
-                    onDelete: () => _deleteBill,
-                    onEdit: () {
-                      // 后续可以跳转到编辑页面
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text("编辑功能待实现"),
+            child: _bills.isEmpty
+                ? Center(
+                    child: Text(
+                      "暂无账单，请点击右上角添加",
+                      style: TextStyle(color: Colors.grey, fontSize: 16),
+                    ),
+                  )
+                : ListView.builder(
+                    itemCount: _bills.length,
+                    itemBuilder: (ctx, index) {
+                      final bill = _bills[index];
+                      //唯一的标识符，这时可以使用 ValueKey 来保持它们的状态
+                      return Dismissible(
+                        key: ValueKey(bill.id),
+                        background: _buildSwipeBackground(),
+                        direction: DismissDirection.startToEnd,
+                        //滑动删除
+                        confirmDismiss: (direction) async {
+                          final confirmed = await showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: Text("确认删除?"),
+                              content: Text("你确定要删除这条账单吗?"),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.of(ctx).pop(false),
+                                  child: Text("取消"),
+                                ),
+                                TextButton(
+                                  onPressed: () => Navigator.of(ctx).pop(true),
+                                  child: Text(
+                                    "删除",
+                                    style: TextStyle(color: Colors.red),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                          // 是 null，就返回 false,是 null，就返回 confirmed 的值；
+                          return confirmed ?? false;
+                        },
+                        onDismissed: (_) {
+                          final deletedBill = bill;
+                          _deleteBill(deletedBill.id);
+
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text("已删除"),
+                              action: SnackBarAction(
+                                label: "撤销",
+                                onPressed: () {
+                                  setState(() {
+                                    _bills.insert(index, deletedBill);
+                                  });
+                                },
+                              ),
+                            ),
+                          );
+                        },
+                        child: AnimatedSwitcher(
+                          duration: Duration(milliseconds: 300),
+                          child: BillCard(
+                            bill: bill,
+                            //这个是Card的长按出菜单后删除
+                            onDelete: () => _deleteBill(bill.id),
+                            onEdit: () {
+                              // 后续可以跳转到编辑页面
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text("编辑功能待实现"),
+                                ),
+                              );
+                            },
+                          ),
                         ),
                       );
                     },
                   ),
-                );
-              },
-            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  //滑动的
+  Widget _buildSwipeBackground() {
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+      padding: EdgeInsets.symmetric(horizontal: 20),
+      decoration: BoxDecoration(
+        color: Colors.redAccent.shade100,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      alignment: Alignment.centerLeft,
+      child: Row(
+        children: [
+          Icon(
+            Icons.delete_outline,
+            color: Colors.white,
+            size: 26,
+          ),
+          SizedBox(
+            width: 8,
+          ),
+          Text(
+            "删除",
+            style: TextStyle(color: Colors.white, fontSize: 16),
           ),
         ],
       ),
