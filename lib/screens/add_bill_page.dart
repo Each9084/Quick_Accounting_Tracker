@@ -162,14 +162,18 @@ class _AddBillPageState extends State<AddBillPage> {
 
   void _handleDelete() {
     setState(() {
-      if (_inputAmount.length <= 1) {
-        _inputAmount = "0.00";
-      } else {
+      if (_inputAmount.isNotEmpty) {
         _inputAmount = _inputAmount.substring(0, _inputAmount.length - 1);
-        if (_inputAmount.isEmpty) _inputAmount = "0.00";
+        _displayExpression = _displayExpression.substring(0, _displayExpression.length - 1);
+      }
+
+      if (_inputAmount.isEmpty || _inputAmount == "0") {
+        _inputAmount = "0.00";
+        _displayExpression = "";
       }
     });
   }
+
 
   //处理运算符点击(+/-)
   void _handleOperatorTap(String op) {
@@ -212,8 +216,10 @@ class _AddBillPageState extends State<AddBillPage> {
       _inputAmount = '0.00';
       _firstOperand = null;
       _operator = '';
+      _displayExpression = '';
     });
   }
+
 
   void _handleConfirm() {
     final double? amount = double.tryParse(_inputAmount);
