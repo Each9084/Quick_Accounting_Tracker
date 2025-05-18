@@ -51,6 +51,7 @@ class CustomKeyboard extends StatelessWidget {
         ),
         // 禁止滑动
         physics: const NeverScrollableScrollPhysics(),
+        //类似于for循环,顺序很重要,如果提前渲染就会导致后面是dead code
         itemBuilder: (context, index) {
           if (index == keyBoards.length) {
             return _buildKey("确定", onConfirm, isConfirm: true);
