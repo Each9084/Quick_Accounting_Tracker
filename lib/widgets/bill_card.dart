@@ -31,7 +31,7 @@ class BillCard extends StatelessWidget {
             children: [
               ListTile(
                 leading: Icon(Icons.edit),
-                title: Text("删除帐单"),
+                title: Text("编辑帐单"),
                 onTap: () {
                   Navigator.pop(context);
                   onEdit();
@@ -127,7 +127,7 @@ class BillCard extends StatelessWidget {
                     height: 4,
                   ),
                   Text(
-                    isIncome ? Strings.get("expense") : Strings.get("income"),
+                    isIncome ? Strings.get("income") : Strings.get("expense"),
                     style: TextStyle(
                         color: isIncome ? Colors.greenAccent : Colors.redAccent,
                         fontSize: 12),
