@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:accounting_tracker/models/billCategory.dart';
 import 'package:accounting_tracker/screens/add_bill_page.dart';
+import 'package:accounting_tracker/widgets/bill_card.dart';
 import 'package:accounting_tracker/widgets/new_bill_input.dart';
 import 'package:accounting_tracker/widgets/summary_card.dart';
 import 'package:flutter/material.dart';
@@ -36,7 +37,7 @@ class _BillHomePageState extends State<BillHomePage> {
   }*/
 
   //打开添加的dialog (废弃,我们采用进入新的页面的方式来完成)
-  void _openAddBillDialog() {
+  /* void _openAddBillDialog() {
     showDialog(
         context: context,
         builder: (ctx) {
@@ -55,14 +56,20 @@ class _BillHomePageState extends State<BillHomePage> {
             });
           });
         });
-  }
+  }*/
 
-  void _openAddBillPage() {
-    Navigator.of(context).push(
+  void _openAddBillPage() async{
+    final newBill = await Navigator.of(context).push<Bill>(
       MaterialPageRoute(
         builder: (context) => AddBillPage(),
       ),
     );
+
+    if(newBill!=null){
+      setState(() {
+        _bills.insert(0, newBill);
+      });
+    }
   }
 
   //删除图标 -删除功能
@@ -126,17 +133,21 @@ class _BillHomePageState extends State<BillHomePage> {
               itemCount: _bills.length,
               itemBuilder: (ctx, index) {
                 final bill = _bills[index];
-                return ListTile(
-                  leading: Icon(bill.billCategory.iconData),
-                  //把一个 double 类型的金额，转换成“保留两位小数”的字符串表示。
-                  title:
-                      Text('${bill.note} - ${bill.amount.toStringAsFixed(2)}'),
-                  subtitle: Text(
-                    '${bill.date.toLocal().toString().substring(0, 16)} | 分类:${bill.billCategory.name}',
+                //唯一的标识符，这时可以使用 ValueKey 来保持它们的状态
+                return Dismissible(
+                  key: ValueKey(bill.id),
+                  child: BillCard(
+                    bill: bill,
+                    onDelete: () => _deleteBill,
+                    onEdit: () {
+                      // 后续可以跳转到编辑页面
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text("编辑功能待实现"),
+                        ),
+                      );
+                    },
                   ),
-                  trailing: IconButton(
-                      onPressed: () => _deleteBill(bill.id),
-                      icon: const Icon(Icons.delete)),
                 );
               },
             ),
