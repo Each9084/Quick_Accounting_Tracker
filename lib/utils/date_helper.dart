@@ -29,7 +29,7 @@ class DateHelper {
   }
 
   //预处理账单数据（按日期分组）
-  Map<String, List<Bill>> _groupBillsByDay(List<Bill> bills) {
+  static Map<String, List<Bill>> groupBillsByDay(List<Bill> bills) {
     Map<String, List<Bill>> grouped = {};
     for (final bill in bills) {
       // 例如：'2025-05-26'
@@ -49,11 +49,12 @@ class DateHelper {
         "-${date.day.toString().padLeft(2, "0")}";
   }
 
+  //dayKey:日期分组的唯一键（Key）
   static String getLocalizedDayLabel(String dayKey,BuildContext context){
     final date = DateTime.parse(dayKey);
-    final locale = Localizations.localeOf(context).languageCode;
+    final locale = Localizations.localeOf(context).toString();
     //周几
-    final weekday = DateFormat.Md(locale).format(date);
+    final weekday = DateFormat.E(locale).format(date);
     //看地域习惯 5/26 or 26/5
     final day = DateFormat.Md(locale).format(date);
 
