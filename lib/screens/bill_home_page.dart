@@ -22,6 +22,8 @@ class _BillHomePageState extends State<BillHomePage> {
   final List<Bill> _bills = [];
   DateTime _currentMonth = DateTime.now();
 
+  //TODO 还未完成 有点问题
+
   //控制页面 滑动的作用
   late PageController _pageController;
   final int _initialPage = 1000;
@@ -30,8 +32,7 @@ class _BillHomePageState extends State<BillHomePage> {
   //pageIndex 是当前滑动到的页码
   DateTime _monthFromPageIndex(int pageIndex) {
     final now = DateTime.now();
-    return DateTime(
-        now.year, now.month + (pageIndex - _initialPage));
+    return DateTime(now.year, now.month + (pageIndex - _initialPage));
   }
 
   @override
@@ -138,97 +139,103 @@ class _BillHomePageState extends State<BillHomePage> {
               //从账单列表 _bills 中筛选出符合同一年同某个月的账单，并保存为 billsForMonth
               itemBuilder: (context, index) {
                 final month = _monthFromPageIndex(index);
-                final billsListForMonth = _bills.where((bill) =>
-                    bill.date.year == month.year &&
-                    bill.date.month == month.month).toList();
+                final billsListForMonth = _bills
+                    .where((bill) =>
+                        bill.date.year == month.year &&
+                        bill.date.month == month.month)
+                    .toList();
 
-               if (billsListForMonth.isEmpty){
-                 return Center(
-                   child: Text(
-                     "暂无账单，请点击右上角添加",
-                     style: TextStyle(color: Colors.grey, fontSize: 16),
-                   ),
-                 );
-               }
+                if (billsListForMonth.isEmpty) {
+                  return Center(
+                    child: Text(
+                      "暂无账单，请点击右上角添加",
+                      style: TextStyle(color: Colors.grey, fontSize: 16),
+                    ),
+                  );
+                }
 
-               return  ListView.builder(
-                 itemCount: billsListForMonth.length,
-                 itemBuilder: (ctx, index) {
-                   final bill = billsListForMonth[index];
-                   //唯一的标识符，这时可以使用 ValueKey 来保持它们的状态
-                   return Dismissible(
-                     key: ValueKey(bill.id),
-                     background: const SwipeBackground(),
-                     direction: DismissDirection.startToEnd,
-                     //滑动删除
-                     confirmDismiss: (direction) async {
-                       final confirmed = await showDialog(
-                         context: context,
-                         builder: (context) => AlertDialog(
-                           title: Text("确认删除?"),
-                           content: Text("你确定要删除这条账单吗?"),
-                           actions: [
-                             TextButton(
-                               onPressed: () =>
-                                   Navigator.of(ctx).pop(false),
-                               child: Text("取消"),
-                             ),
-                             TextButton(
-                               onPressed: () =>
-                                   Navigator.of(ctx).pop(true),
-                               child: Text(
-                                 "删除",
-                                 style: TextStyle(color: Colors.red),
-                               ),
-                             ),
-                           ],
-                         ),
-                       );
-                       // 是 null，就返回 false,是 null，就返回 confirmed 的值；
-                       return confirmed ?? false;
-                     },
-                     onDismissed: (_) {
-                       final deletedBill = bill;
-                       _deleteBill(deletedBill.id);
+                //结构为: "2025-05-26": [bill1, bill2],
+                final grouped = DateHelper.groupBillsByDay(_bills);
+                //返回所有的键(日期字符串)为list,得到了一个包含所有日期的列表。
+                //sort() 与compareTo按降序 (从大:最新 到 小:最旧)对这些日期进行排序
+                //compareTo 比较两个字符串,如果 b 在字典顺序上大于 a，则返回一个正数
+                // 表示 b 比 a 大，因此会被排在前面（降序排列）。
+                final sortedKeys = grouped.keys.toList()
+                  ..sort((a, b) => b.compareTo(a));
+                //从这里开始
+                return ListView.builder(
+                  itemCount: billsListForMonth.length,
+                  itemBuilder: (ctx, index) {
+                    final bill = billsListForMonth[index];
+                    //唯一的标识符，这时可以使用 ValueKey 来保持它们的状态
+                    return Dismissible(
+                      key: ValueKey(bill.id),
+                      background: const SwipeBackground(),
+                      direction: DismissDirection.startToEnd,
+                      //滑动删除
+                      confirmDismiss: (direction) async {
+                        final confirmed = await showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: Text("确认删除?"),
+                            content: Text("你确定要删除这条账单吗?"),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.of(ctx).pop(false),
+                                child: Text("取消"),
+                              ),
+                              TextButton(
+                                onPressed: () => Navigator.of(ctx).pop(true),
+                                child: Text(
+                                  "删除",
+                                  style: TextStyle(color: Colors.red),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                        // 是 null，就返回 false,是 null，就返回 confirmed 的值；
+                        return confirmed ?? false;
+                      },
+                      onDismissed: (_) {
+                        final deletedBill = bill;
+                        _deleteBill(deletedBill.id);
 
-                       ScaffoldMessenger.of(context).showSnackBar(
-                         SnackBar(
-                           content: Text("已删除"),
-                           action: SnackBarAction(
-                             label: "撤销",
-                             onPressed: () {
-                               setState(() {
-                                 _bills.insert(index, deletedBill);
-                               });
-                             },
-                           ),
-                         ),
-                       );
-                     },
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text("已删除"),
+                            action: SnackBarAction(
+                              label: "撤销",
+                              onPressed: () {
+                                setState(() {
+                                  _bills.insert(index, deletedBill);
+                                });
+                              },
+                            ),
+                          ),
+                        );
+                      },
 
-                     child: AnimatedSwitcher(
-                       duration: Duration(milliseconds: 300),
-                       child: BillCard(
-                         bill: bill,
-                         //这个是Card的长按出菜单后删除
-                         onDelete: () => _deleteBill(bill.id),
-                         onEdit: () {
-                           // 后续可以跳转到编辑页面
-                           ScaffoldMessenger.of(context).showSnackBar(
-                             const SnackBar(
-                               content: Text("编辑功能待实现"),
-                             ),
-                           );
-                         },
-                       ),
-                     ),
-                   );
-                 },
-               );
-
+                      child: AnimatedSwitcher(
+                        duration: Duration(milliseconds: 300),
+                        child: BillCard(
+                          bill: bill,
+                          //这个是Card的长按出菜单后删除
+                          onDelete: () => _deleteBill(bill.id),
+                          onEdit: () {
+                            // 后续可以跳转到编辑页面
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text("编辑功能待实现"),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    );
+                  },
+                );
               },
-
-
             ),
           ),
         ],
