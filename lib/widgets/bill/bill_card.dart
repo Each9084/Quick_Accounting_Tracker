@@ -2,9 +2,10 @@ import 'dart:ffi';
 
 import 'package:flutter/material.dart';
 
-import '../l10n/strings.dart';
-import '../models/bill.dart';
+import '../../l10n/strings.dart';
+import '../../models/bill.dart';
 
+// 单个卡片
 class BillCard extends StatelessWidget {
   final Bill bill;
   final VoidCallback onDelete;
