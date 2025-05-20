@@ -1,7 +1,7 @@
 import 'package:accounting_tracker/l10n/strings.dart';
 import 'package:accounting_tracker/widgets/amount_input_bar.dart';
 import 'package:accounting_tracker/widgets/custom_keyboard.dart';
-import 'package:accounting_tracker/widgets/custom_keyboard_pro.dart';
+import 'package:accounting_tracker/utils/custom_keyboard_pro.dart';
 import 'package:accounting_tracker/widgets/note_input_bar.dart';
 import 'package:flutter/material.dart';
 
