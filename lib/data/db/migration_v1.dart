@@ -19,8 +19,8 @@ class MigrationV1 {
     //REAL 数据类型:用来表示带小数点的数值
     //ON DELETE CASCADE:级联删除
     //某个用户记录被删除，则 bills 表中所有关联的账单记录也会被自动删除
-    await db.execute("""CREATE TABLE bills( id INTEGER PRIMARY KEY, 
-        user_id TEXT, 
+    await db.execute("""CREATE TABLE bills(id INTEGER PRIMARY KEY AUTOINCREMENT, 
+        user_id INTEGER, 
         amount REAL,
         note TEXT,
         date TEXT,
