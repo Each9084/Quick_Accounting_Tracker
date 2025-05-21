@@ -28,7 +28,7 @@ class DateHelper {
     return DateFormat("dd").format(date);
   }
 
-  //预处理账单数据（按日期分组）
+  //预处理账单数据（按日期分组） 结构为: "2025-05-26": [bill1, bill2],
   static Map<String, List<Bill>> groupBillsByDay(List<Bill> bills) {
     Map<String, List<Bill>> grouped = {};
     for (final bill in bills) {
