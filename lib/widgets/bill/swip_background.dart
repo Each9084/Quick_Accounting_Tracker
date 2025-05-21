@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+//删除的背景滑动组件
 class SwipeBackground extends StatelessWidget {
   final String label;
   final IconData icon;
