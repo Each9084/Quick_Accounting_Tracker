@@ -60,14 +60,14 @@ class UserDao {
     final dataToUpdate = Map<String,dynamic>.from(user.toMap())..remove("id");
     return await db.update(
       tableName,
-      user.toMap(),
+      dataToUpdate,
       where: "id=?",
       whereArgs: [user.id],
     );
   }
 
   //设置当前用户为活跃（只允许一个活跃用户）
-  static Future<void> setActivityUser(int uid) async {
+  static Future<void> setActivityUser(String uid) async {
     final db = await AppDatabase.database;
     await db.transaction((txn) async {
       await txn.update(tableName, {'isActive': 0});
