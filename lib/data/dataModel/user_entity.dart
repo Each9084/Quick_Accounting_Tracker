@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 
 class UserEntity {
   // 本地 SQLite 主键
-  final int id;
+  final int?id;
 
   // Firebase UID 或远程唯一标识
   final String uid;
@@ -19,7 +19,7 @@ class UserEntity {
   final bool isActive;
 
   UserEntity(
-      {required this.id,
+      { this.id,
       required this.uid,
       required this.username,
       required this.email,
