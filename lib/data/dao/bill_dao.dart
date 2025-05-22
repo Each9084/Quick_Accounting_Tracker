@@ -45,6 +45,11 @@ class BillDao {
     );
   }
 
+  static Future<void> clearAll() async {
+    final db = await AppDatabase.database;
+    await db.delete(tableName);
+  }
+
   // 查询某个用户的所有账单
   static Future<List<BillEntity>> getBillsByUser(int user_id) async {
     final db = await AppDatabase.database;
