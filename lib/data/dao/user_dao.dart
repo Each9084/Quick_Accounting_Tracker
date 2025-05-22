@@ -6,15 +6,14 @@ class UserDao {
   static const String tableName = "users";
 
   //插入用户,若存在则替换
-  static Future<void> insertUser(UserEntity user) async {
+  static Future<int> insertUser(UserEntity user) async {
     final db = await AppDatabase.database;
     //将 UserEntity 转换为数据库表能够理解的格式。
     //如果插入的数据与已有数据冲突 则用新数据替换旧数据
-    await db.insert(
+    return await db.insert(
       tableName,
       // 移除 id 让 SQLite 自动分配
-      user.toMap(),
-        //..remove("id"),
+      user.toMap()..remove("id"),
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
   }
@@ -52,6 +51,11 @@ class UserDao {
     );
   }
 
+  static Future<void> clearAll() async {
+    final db = await AppDatabase.database;
+    await db.delete(tableName); // 删除所有记录
+  }
+
   // 更新用户信息
   static Future<int> updateUser(UserEntity user) async {
     final db = await AppDatabase.database;
@@ -86,4 +90,6 @@ class UserDao {
     }
     return null;
   }
+
+
 }
