@@ -5,6 +5,7 @@ import 'package:accounting_tracker/data/dataModel/user_entity.dart';
 import 'package:accounting_tracker/data/db/app_database.dart';
 import 'package:accounting_tracker/l10n/strings.dart';
 import 'package:accounting_tracker/screens/bill_home_page.dart';
+import 'package:accounting_tracker/test/db_test_page.dart';
 import 'package:flutter/material.dart';
 
 void main() async {
@@ -49,7 +50,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Assistant Tracker',
-      home: BillHomePage(),
+      home: //BillHomePage(),
+      DBTestPage(),
     );
   }
 }
