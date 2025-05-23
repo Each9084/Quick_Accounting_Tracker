@@ -1,5 +1,8 @@
 import 'dart:math';
 
+import 'package:accounting_tracker/data/dao/bill_dao.dart';
+import 'package:accounting_tracker/data/dao/user_dao.dart';
+import 'package:accounting_tracker/data/mapper/bill_mapper.dart';
 import 'package:accounting_tracker/models/billCategory.dart';
 import 'package:accounting_tracker/screens/add_bill_page.dart';
 import 'package:accounting_tracker/utils/date_helper.dart';
@@ -20,10 +23,12 @@ class BillHomePage extends StatefulWidget {
 }
 
 class _BillHomePageState extends State<BillHomePage> {
-  final List<Bill> _bills = [];
-  DateTime _currentMonth = DateTime.now();
+  List<Bill> _bills = [];
 
-  //TODO 还未完成 有点问题
+  int? _activeUserId;
+  bool _isLoading = true;
+
+  DateTime _currentMonth = DateTime.now();
 
   //控制页面 滑动的作用
   late PageController _pageController;
@@ -41,6 +46,7 @@ class _BillHomePageState extends State<BillHomePage> {
     // TODO: implement initState
     super.initState();
     _pageController = PageController(initialPage: _initialPage);
+    _loadInitialData();
   }
 
   //添加账单页面
@@ -110,6 +116,53 @@ class _BillHomePageState extends State<BillHomePage> {
         .toList();
   }
 
+  //初始化,获取当前活跃用户 UserEntity,确保页面一加载就有数据可展示
+  //没有活跃用户则直接返回，防止后续查询出错
+  void _loadInitialData() async {
+    final user = await UserDao.getActiveUser();
+    if ((user == null)) {
+      //TODO:跳转登录页或显示提示
+      print("当前没有活跃");
+      return;
+    }
+
+    //保存当前用户 ID，后续所有账单查询都基于这个 user_id 进行。
+    _activeUserId = user.id;
+    await _loadBillsForMonth(_currentMonth);
+
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
+  //查询指定月份（年 + 月）的账单记录，并更新页面状态。
+  Future<void> _loadBillsForMonth(DateTime month) async {
+    if (_activeUserId == null) return;
+    final bills = await BillDao.getBillByMonth(
+      user_id: _activeUserId!,
+      year: month.year,
+      month: month.month,
+    );
+
+    setState(() {
+      _bills = bills.map((e) => BillMapper.toModel(e)).toList();
+    });
+  }
+
+  //监听 PageView 滑动翻页事件，更新当前月份，并加载新月账单。
+  void _onMonthChanged(int index) async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    _currentMonth = _monthFromPageIndex(index);
+    await _loadBillsForMonth(_currentMonth);
+
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -130,50 +183,51 @@ class _BillHomePageState extends State<BillHomePage> {
           SummaryCard(income: _calculateIncome(), expense: _calculateExpense()),
           //可滚动的账单
           Expanded(
-            child: PageView.builder(
-              controller: _pageController,
-              onPageChanged: (index) {
-                setState(() {
-                  _currentMonth = _monthFromPageIndex(index);
-                });
-              },
-              //从账单列表 _bills 中筛选出符合同一年同某个月的账单，并保存为 billsForMonth
-              itemBuilder: (context, index) {
-                final month = _monthFromPageIndex(index);
-                final billsListForMonth = _bills
-                    .where((bill) =>
-                        bill.date.year == month.year &&
-                        bill.date.month == month.month)
-                    .toList();
+            child: _isLoading
+                ? Center(
+                    child: CircularProgressIndicator(),
+                  )
+                : PageView.builder(
+                    controller: _pageController,
+                    onPageChanged: _onMonthChanged,
+                    //从账单列表 _bills 中筛选出符合同一年同某个月的账单，并保存为 billsForMonth
+                    itemBuilder: (context, index) {
+                      final month = _monthFromPageIndex(index);
+                      final billsListForMonth = _bills
+                          .where((bill) =>
+                              bill.date.year == month.year &&
+                              bill.date.month == month.month)
+                          .toList();
 
-                if (billsListForMonth.isEmpty) {
-                  return Center(
-                    child: Text(
-                      "暂无账单，请点击右上角添加",
-                      style: TextStyle(color: Colors.grey, fontSize: 16),
-                    ),
-                  );
-                }
+                      if (billsListForMonth.isEmpty) {
+                        return Center(
+                          child: Text(
+                            "暂无账单，请点击右上角添加",
+                            style: TextStyle(color: Colors.grey, fontSize: 16),
+                          ),
+                        );
+                      }
 
-                //结构为: "2025-05-26": [bill1, bill2],
-                final grouped = DateHelper.groupBillsByDay(billsListForMonth);
-                //返回所有的键(日期字符串)为list,得到了一个包含所有日期的列表。
-                //sort() 与compareTo按降序 (从大:最新 到 小:最旧)对这些日期进行排序
-                //compareTo 比较两个字符串,如果 b 在字典顺序上大于 a，则返回一个正数
-                // 表示 b 比 a 大，因此会被排在前面（降序排列）。
-                final sortedKeys = grouped.keys.toList()
-                  ..sort((a, b) => b.compareTo(a));
-                //从这里开始
-                return MonthlyBillView(
-                    bills: billsListForMonth,
-                    onDelete: _deleteBill,
-                    onEdit: (bill) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text("编辑功能待实现")),
-                      );
-                    });
-              },
-            ),
+                      //结构为: "2025-05-26": [bill1, bill2],
+                      final grouped =
+                          DateHelper.groupBillsByDay(billsListForMonth);
+                      //返回所有的键(日期字符串)为list,得到了一个包含所有日期的列表。
+                      //sort() 与compareTo按降序 (从大:最新 到 小:最旧)对这些日期进行排序
+                      //compareTo 比较两个字符串,如果 b 在字典顺序上大于 a，则返回一个正数
+                      // 表示 b 比 a 大，因此会被排在前面（降序排列）。
+                      final sortedKeys = grouped.keys.toList()
+                        ..sort((a, b) => b.compareTo(a));
+                      //从这里开始
+                      return MonthlyBillView(
+                          bills: billsListForMonth,
+                          onDelete: _deleteBill,
+                          onEdit: (bill) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text("编辑功能待实现")),
+                            );
+                          });
+                    },
+                  ),
           ),
         ],
       ),
