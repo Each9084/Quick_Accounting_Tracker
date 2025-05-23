@@ -51,7 +51,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Assistant Tracker',
       home: //BillHomePage(),
-      DBTestPage(),
+      BillHomePage(),
     );
   }
 }
