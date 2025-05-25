@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:accounting_tracker/data/dao/bill_dao.dart';
 import 'package:accounting_tracker/data/dao/user_dao.dart';
 import 'package:accounting_tracker/data/mapper/bill_mapper.dart';
+import 'package:accounting_tracker/data/repository/bill_repository.dart';
 import 'package:accounting_tracker/models/billCategory.dart';
 import 'package:accounting_tracker/screens/add_bill_page.dart';
 import 'package:accounting_tracker/utils/date_helper.dart';
@@ -16,13 +17,17 @@ import 'package:flutter/material.dart';
 import '../models/bill.dart';
 
 class BillHomePage extends StatefulWidget {
-  const BillHomePage({super.key});
+  final BillRepository? billRepository;
+
+  const BillHomePage({super.key, this.billRepository});
 
   @override
   State<BillHomePage> createState() => _BillHomePageState();
 }
 
 class _BillHomePageState extends State<BillHomePage> {
+  late final BillRepository _billRepository;
+
   List<Bill> _bills = [];
 
   int? _activeUserId;
@@ -46,6 +51,7 @@ class _BillHomePageState extends State<BillHomePage> {
     // TODO: implement initState
     super.initState();
     _pageController = PageController(initialPage: _initialPage);
+    _billRepository = widget.billRepository ?? BillRepository();
     _loadInitialData();
   }
 
@@ -53,35 +59,59 @@ class _BillHomePageState extends State<BillHomePage> {
   void _openAddBillPage() async {
     final newBill = await Navigator.of(context).push<Bill>(
       MaterialPageRoute(
-        builder: (context) => AddBillPage(),
+        //传递依赖 把这一个已经创建好的 Repository 实例“注入”给了 AddBillPage
+        //它不再自己创建 repository，而是依赖外部传入,所以调用它时就要显式地传入
+        builder: (context) => AddBillPage(
+          repository: _billRepository,
+        ),
       ),
     );
 
-    if (newBill != null) {
-      setState(() {
-        _bills.insert(0, newBill);
-
-        // 自动跳转到该账单的月份
-        /*final int pageIndex = _initialPage + ((newBill.date.year - _currentMonth.year) * 12 + (newBill.date.month - _currentMonth.month));
-        _pageController.jumpToPage(pageIndex);
-        _currentMonth = DateTime(newBill.date.year, newBill.date.month);*/
-      });
-    }
+    //拉取 最新的
+    await _loadBillsForMonth(_currentMonth);
   }
 
   //删除图标 -删除功能
-  void _deleteBill(String id) {
-    setState(() {
-      //_bills.removeWhere((bill) => bill.id == id);
-      for (int i = 0; i < _bills.length; i++) {
-        if (_bills[i].id == id) {
-          //removeAt 是 Dart 的 List 类自带的一个方法，
-          //用来根据下标（index）删除列表中的元素。
-          _bills.removeAt(i);
-          break;
-        }
+  void _deleteBill(String billId) async {
+    //是的 我的model是String 数据库是int 但无所谓 这不就是解耦的意义么
+    final parsedId = int.tryParse(billId);
+
+    if (parsedId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("账单 ID 无效"),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+      return;
+    }
+
+    try {
+      final deleted = await _billRepository.deleteBill(parsedId);
+      if (deleted > 0) {
+        await _loadBillsForMonth(_currentMonth);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("删除成功"),
+            backgroundColor: Colors.greenAccent,
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("未能删除账单"),
+            backgroundColor: Colors.orangeAccent,
+          ),
+        );
       }
-    });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("删除失败：$e"),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+    }
   }
 
   //计算收入
@@ -138,14 +168,14 @@ class _BillHomePageState extends State<BillHomePage> {
   //查询指定月份（年 + 月）的账单记录，并更新页面状态。
   Future<void> _loadBillsForMonth(DateTime month) async {
     if (_activeUserId == null) return;
-    final bills = await BillDao.getBillByMonth(
-      user_id: _activeUserId!,
+    final bills = await _billRepository.getBillsByMonth(
+      userId: _activeUserId!,
       year: month.year,
       month: month.month,
     );
 
     setState(() {
-      _bills = bills.map((e) => BillMapper.toModel(e)).toList();
+      _bills = bills;
     });
   }
 
@@ -221,10 +251,24 @@ class _BillHomePageState extends State<BillHomePage> {
                       return MonthlyBillView(
                           bills: billsListForMonth,
                           onDelete: _deleteBill,
-                          onEdit: (bill) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text("编辑功能待实现")),
+                          //edit的功能实现 比较复杂
+                          // 1.从 BillHomePage 的 MonthlyBillView 中触发编辑
+                          // 2.AddBillPage 接收到 billToEdit，并进入编辑模式
+                          // 3.在 initState() 中预填内容
+                          // 4.是在 _handleConfirm() 中判断是否为编辑模式，并调用更新接口
+                          onEdit: (bill) async {
+                            await Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) => AddBillPage(
+                                  repository: _billRepository,
+                                  // 在这里传入要编辑的账单
+                                  billToEdit: bill,
+                                ),
+                              ),
                             );
+
+                            //编辑后刷新
+                            await _loadBillsForMonth(_currentMonth);
                           });
                     },
                   ),
