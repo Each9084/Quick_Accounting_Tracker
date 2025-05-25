@@ -45,6 +45,7 @@ class BillDao {
     );
   }
 
+  //删除数据库中所有账单 !!!!慎重!!!!
   static Future<void> clearAll() async {
     final db = await AppDatabase.database;
     await db.delete(tableName);
