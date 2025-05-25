@@ -12,6 +12,7 @@ import 'package:flutter/cupertino.dart';
 import '../../models/bill.dart';
 
 class BillMapper {
+  //从数据库结构 → UI 模型 从数据库读取账单，准备在界面上展示
   static Bill toModel(BillEntity billEntity) {
     return Bill(
         id: billEntity.id.toString(),
@@ -27,6 +28,7 @@ class BillMapper {
         isIncome: billEntity.is_income);
   }
 
+  //从 UI 模型 → 数据库结构 输入的账单保存到数据库时
   static BillEntity toEntity(Bill billModel, {required int userId}) {
     return BillEntity(
       id: int.tryParse(billModel.id),
