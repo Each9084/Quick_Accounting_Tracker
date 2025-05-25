@@ -1,15 +1,23 @@
+import 'package:accounting_tracker/data/dao/user_dao.dart';
+import 'package:accounting_tracker/data/repository/bill_repository.dart';
 import 'package:accounting_tracker/l10n/strings.dart';
 import 'package:accounting_tracker/widgets/amount_input_bar.dart';
 import 'package:accounting_tracker/widgets/custom_keyboard.dart';
 import 'package:accounting_tracker/utils/custom_keyboard_pro.dart';
-import 'package:accounting_tracker/widgets/note_input_bar.dart';
+import 'package:accounting_tracker/widgets/note/note_input_bar.dart';
 import 'package:flutter/material.dart';
 
 import '../models/bill.dart';
 import '../models/billCategory.dart';
 
 class AddBillPage extends StatefulWidget {
-  const AddBillPage({super.key});
+  //注入
+  final BillRepository? repository;
+
+  //编辑模式 复用这个addBillPage
+  final Bill? billToEdit;
+
+  const AddBillPage({super.key, this.repository, this.billToEdit});
 
   @override
   State<AddBillPage> createState() => _AddBillPageState();
@@ -43,7 +51,17 @@ class _AddBillPageState extends State<AddBillPage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    _selectedCategory = _expenseCategories[0];
+
+    if (widget.billToEdit != null) {
+      final edit = widget.billToEdit!;
+      isIncome = edit.isIncome;
+      _selectedDate = edit.date;
+      _selectedCategory = edit.billCategory;
+      _inputAmount = edit.amount.toStringAsFixed(2);
+      _noteController.text = edit.note ?? "";
+    } else {
+      _selectedCategory = _expenseCategories[0];
+    }
   }
 
   final List<BillCategory> _expenseCategories = [
@@ -107,39 +125,6 @@ class _AddBillPageState extends State<AddBillPage> {
     return "$month/$day";
   }
 
-  /*已废弃 目前是V2
-  void _handleKeyTap(String value) {
-    setState(() {
-      //防止用户输入多个小数点（例如：12.3.4 是非法的）
-      // 如果已经有一个小数点，就忽略本次输入
-      if (value == "." && _inputAmount.contains(".")) return;
-
-      //如果当前是初始状态 "0.00"，清空它，改为用户新输入的内容
-      if (_inputAmount == "0.00") {
-        _inputAmount = value == "." ? "0." : value;
-      } else {
-        //如果不是初始值，就直接把新按下的数字拼接到末尾：
-        _inputAmount += value;
-      }
-    });
-  }*/
-
-  /*已废弃 目前是V2
-  void _handleDelete() {
-    setState(() {
-      if (_inputAmount.length <= 1) {
-        _inputAmount = "0.00";
-      } else {
-        //是在做 删除金额字符串的最后一个字符
-        // 也就是按下键盘上的“删除键（⌫）”时发生的逻辑。
-        _inputAmount = _inputAmount.substring(0, _inputAmount.length - 1);
-        if (_inputAmount.isEmpty) {
-          _inputAmount = "0.00";
-        }
-      }
-    });
-  }*/
-
   void _handleKeyTap(String value) {
     setState(() {
       //避免多次小数点
@@ -164,7 +149,8 @@ class _AddBillPageState extends State<AddBillPage> {
     setState(() {
       if (_inputAmount.isNotEmpty) {
         _inputAmount = _inputAmount.substring(0, _inputAmount.length - 1);
-        _displayExpression = _displayExpression.substring(0, _displayExpression.length - 1);
+        _displayExpression =
+            _displayExpression.substring(0, _displayExpression.length - 1);
       }
 
       if (_inputAmount.isEmpty || _inputAmount == "0") {
@@ -173,7 +159,6 @@ class _AddBillPageState extends State<AddBillPage> {
       }
     });
   }
-
 
   //处理运算符点击(+/-)
   void _handleOperatorTap(String op) {
@@ -220,8 +205,7 @@ class _AddBillPageState extends State<AddBillPage> {
     });
   }
 
-
-  void _handleConfirm() {
+  Future<void> _handleConfirm() async {
     final double? amount = double.tryParse(_inputAmount);
     if (amount == null || amount <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -233,21 +217,69 @@ class _AddBillPageState extends State<AddBillPage> {
       return;
     }
 
-    final newBill = Bill(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
-        amount: amount,
-        date: _selectedDate,
-        billCategory: _selectedCategory,
-        isIncome: isIncome,
-        note: _noteController.text.isEmpty ? null : _noteController.text);
+    final isEditing = widget.billToEdit != null;
+
+    //有可能是新加 也有可能是 更新(编辑)
+    final Bill newBill = Bill(
+      id: isEditing
+          ? widget.billToEdit!.id
+          : DateTime.now().millisecondsSinceEpoch.toString(),
+      amount: amount,
+      date: _selectedDate,
+      billCategory: _selectedCategory,
+      isIncome: isIncome,
+      note: _noteController.text.isEmpty ? null : _noteController.text,
+    );
+
+    try {
+      final user = await UserDao.getActiveUser();
+
+      if (user == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("未找到活跃用户"), backgroundColor: Colors.redAccent),
+        );
+        return;
+      }
+
+      //final repository = BillRepository(); 依赖就写死了
+      //如果外部传入了一个 repository，就使用它（可用于测试、注入、Mock）
+      //否则就使用默认的 BillRepository() 实例，确保功能正常
+      final repository = widget.repository ?? BillRepository();
+      if (isEditing) {
+        await repository.updateBill(newBill, userId: user.id!);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("编辑账单 目前账单已更新"),
+            backgroundColor: Colors.greenAccent,
+          ),
+        );
+      } else {
+        await repository.insertBill(newBill, userId: user.id!);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("添加账单 目前账单已保存"),
+            backgroundColor: Colors.greenAccent,
+          ),
+        );
+      }
+      // 返回上一页
+      Navigator.of(context).pop();
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("保存失败: $e"),
+        ),
+      );
+    }
 
     //  返回新账单
-    Navigator.of(context).pop(newBill);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      //禁止因为键盘弹出而调整布局 很关键 不然会压缩底部键盘的空间
+      resizeToAvoidBottomInset: false,
         body: SafeArea(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
