@@ -23,6 +23,9 @@ class BillCard extends StatelessWidget {
     final isIncome = bill.isIncome;
     final amountColor = isIncome ? Colors.greenAccent : Colors.deepOrangeAccent;
     return GestureDetector(
+
+      //轻点也可以编辑
+      onTap: onEdit,
       // 长按弹出编辑菜单
       onLongPress: () {
         showModalBottomSheet(
