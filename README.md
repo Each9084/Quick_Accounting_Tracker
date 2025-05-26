@@ -23,7 +23,7 @@
 
 |  #   | 功能说明                                        | 截图                                                         |
 | :--: | ----------------------------------------------- | ------------------------------------------------------------ |
-|  1️⃣   | 主页面：显示当月账单、总资产卡片、添加按钮等    | ![1mainpage]<img src = ../accounting_tracker/assets/img/introduction/1mainpage.gif width = 60% > |
+|  1️⃣   | 主页面：显示当月账单、总资产卡片、添加按钮等    | <div align="center"><img src = ../accounting_tracker/assets/img/introduction/1mainpage.gif width = 60% ></div> |
 |  2️⃣   | 添加账单：支持自定义键盘、备注、图标分类等      | ![2addpage]<img src =../accounting_tracker/assets/img/introduction/2addpage.gif width = 60%> |
 |  3️⃣   | 删除账单：通过滑动删除并展示红色提示背景        | ![3delete]<img src = ../accounting_tracker/assets/img/introduction/3delete.gif width = 60%> |
 |  4️⃣   | 到达指定日期 / 搜索功能（模糊查询）             | ![4search]<img src =../accounting_tracker/assets/img/introduction/4search.gif width = 60%> |
