@@ -19,7 +19,8 @@ class MigrationV1 {
     //REAL 数据类型:用来表示带小数点的数值
     //ON DELETE CASCADE:级联删除
     //某个用户记录被删除，则 bills 表中所有关联的账单记录也会被自动删除
-    await db.execute("""CREATE TABLE bills(id INTEGER PRIMARY KEY AUTOINCREMENT, 
+    await db
+        .execute("""CREATE TABLE bills(id INTEGER PRIMARY KEY AUTOINCREMENT, 
         user_id INTEGER, 
         amount REAL,
         note TEXT,
@@ -30,5 +31,19 @@ class MigrationV1 {
         FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
         )
         """);
+
+    //添加 categories 表建表 SQL
+    await db.execute("""
+  CREATE TABLE bill_categories (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name_key TEXT,
+    icon_code_point INTEGER,
+    icon_font_family TEXT,
+    is_income INTEGER,
+    is_user_defined INTEGER,
+    user_id INTEGER,
+    FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
+  )
+""");
   }
 }
