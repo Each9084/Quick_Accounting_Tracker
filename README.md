@@ -1,5 +1,18 @@
 # 📒 Quick Accounting Tracker
 
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Flutter-3.22.2-blue?logo=flutter" alt="Flutter Version" />
+  <img src="https://img.shields.io/badge/Dart-3.4.3-blue?logo=dart" alt="Dart Version" />
+  <img src="https://img.shields.io/badge/Platform-Android%20Only-green?logo=android" alt="Platform" />
+  <img src="https://img.shields.io/badge/License-MIT-yellow?logo=open-source-initiative" alt="License" />
+</p>
+
+
+---
+
+
+
 > 🧾 一款典雅简约、功能实用的 Flutter 记账助手应用。  
 > 🎯 记录日常收入支出，管理分类，支持离线保存、国际化与夜间模式。
 
@@ -21,45 +34,38 @@
 
 ## 🧭 截图预览（功能展示）
 
-### 主页面：显示当月账单、总资产卡片、添加按钮等
+<span style='display:inline-block;width:32%;text-align:center'><b>1️⃣ 主页面</b></span><span style='display:inline-block;width:32%;text-align:center'><b>2️⃣ 添加账单</b></span><span style='display:inline-block;width:32%;text-align:center'><b>3️⃣ 删除账单</b></span>
 
-<img src="assets/img/introduction/1mainpage.gif" width="60%">
+<p float='left'>
+  <img src="assets/img/introduction/1mainpage.gif" width="32%" title="1️⃣ 主页面" alt="1️⃣ 主页面" />
+  <img src="assets/img/introduction/2addpage.gif" width="32%" title="2️⃣ 添加账单" alt="2️⃣ 添加账单" />
+  <img src="assets/img/introduction/3delete.gif" width="32%" title="3️⃣ 删除账单" alt="3️⃣ 删除账单" />
+</p>
 
-### 添加账单页面：自定义键盘与分类图标选择
 
-<img src="assets/img/introduction/2addpage.gif" width="60%">
+<span style='display:inline-block;width:32%;text-align:center'><b>4️⃣ 跳转/搜索</b></span><span style='display:inline-block;width:32%;text-align:center'><b>5️⃣ 夜间模式</b></span><span style='display:inline-block;width:32%;text-align:center'><b>6️⃣ 多语言</b></span>
 
-### 删除账单：滑动删除操作
+<p float='left'>
+  <img src="assets/img/introduction/4search.gif" width="32%" title="4️⃣ 跳转/搜索" alt="4️⃣ 跳转/搜索" />
+  <img src="assets/img/introduction/5nightmode.gif" width="32%" title="5️⃣ 夜间模式" alt="5️⃣ 夜间模式" />
+  <img src="assets/img/introduction/6multilanguage.gif" width="32%" title="6️⃣ 多语言" alt="6️⃣ 多语言" />
+</p>
 
-<img src="assets/img/introduction/3delete.gif" width="60%">
 
-### 日期跳转 & 搜索功能
+<span style='display:inline-block;width:32%;text-align:center'><b>7️⃣ 分类管理</b></span><span style='display:inline-block;width:32%;text-align:center'><b>8️⃣ 用户反馈</b></span><span style='display:inline-block;width:32%;text-align:center'><b>9️⃣ 版本回顾</b></span>
 
-<img src="assets/img/introduction/4search.gif" width="60%">
+<p float='left'>
+  <img src="assets/img/introduction/7addcategory.gif" width="32%" title="7️⃣ 分类管理" alt="7️⃣ 分类管理" />
+  <img src="assets/img/introduction/8feedback.gif" width="32%" title="8️⃣ 用户反馈" alt="8️⃣ 用户反馈" />
+  <img src="assets/img/introduction/9update.gif" width="32%" title="9️⃣ 版本回顾" alt="9️⃣ 版本回顾" />
+</p>
 
-### 夜间模式：跟随系统切换
+<span style='display:inline-block;width:32%;text-align:center'><b>🔟 清除缓存</b></span>
 
-<img src="assets/img/introduction/5nightmode.gif" width="60%">
+<p float='left'>
+  <img src="assets/img/introduction/10clearcache.gif" width="32%" title="🔟 清除缓存" alt="🔟 清除缓存" />
+</p>
 
-### 多语言支持：中英切换
-
-<img src="assets/img/introduction/6multilanguage.gif" width="60%">
-
-### 分类管理：添加、编辑、删除
-
-<img src="assets/img/introduction/7addcategory.gif" width="60%">
-
-### 反馈页面：支持 GitHub / 邮箱 / B 站
-
-<img src="assets/img/introduction/8feedback.gif" width="60%">
-
-### 版本更迭时间轴
-
-<img src="assets/img/introduction/9update.gif" width="60%">
-
-### 清除缓存：初始化应用
-
-<img src="assets/img/introduction/10clearcache.gif" width="60%">
 
 ## 🗂️ 项目结构
 
@@ -152,18 +158,39 @@ flutter run
 
 ---
 
-## 🚧 开发计划（Roadmap）
+## 🚧 未来开发计划
 
-- ✅ 多语言支持（完成）
-- ✅ 分类管理模块（完成）
-- ✅ 自定义键盘（完成）
-- ✅ 波浪视觉风格（完成）
-- 🕐 OCR 小票识别备注（计划中）
-- 🕐 Firebase 云同步（计划中）
-- 🕐 多账本支持（计划中）
-- 🕐 数据导出功能（CSV / Excel）
+- 🕐 OCR 小票识别备注（未实装）
+- 🕐 Firebase 云同步（正在查看API文档）
+- 🕐 多账本支持（已留下接口）
+- 🕐 数据展示（正在寻找更好的插件）
 
 ---
+
+
+---
+
+## 🧩 插件说明
+
+以下为本项目主要使用的 Flutter 插件：
+
+| 插件名称               | 版本     | 说明                                     |
+| ---------------------- | -------- | ---------------------------------------- |
+| `flutter_localization` | ^0.3.0   | 官方国际化支持，用于语言切换             |
+| `intl`                 | ^0.19.0  | 日期与本地化格式化处理                   |
+| `sqflite`              | ^2.3.3+1 | 本地数据库 SQLite 实现                   |
+| `path`                 | ^1.9.0   | 处理本地路径工具包                       |
+| `path_provider`        | ^2.1.5   | 获取本地目录路径（如文档/缓存）          |
+| `month_year_picker`    | ^0.4.0+1 | 支持年月选择器，用于快速跳转账单月份     |
+| `provider`             | ^6.1.5   | 状态管理框架，简洁轻量                   |
+| `url_launcher`         | ^6.3.1   | 跳转外部链接（如邮件、浏览器）           |
+| `flutter_phoenix`      | ^1.1.1   | 实现 App 重启（如清除缓存后重启 App）    |
+| `shared_preferences`   | ^2.3.3   | 简易本地键值对缓存，保存语言、主题等设置 |
+| `cupertino_icons`      | ^1.0.6   | iOS 风格图标支持                         |
+| `wave`                 | ^0.2.2   | *导入但未实际使用*                       |
+
+> 💡 注：`wave` 插件未实际应用于当前页面绘制，自定义已实现类似效果,但未来可能作为视觉增强候选项。
+
 
 ## 📄 License
 
