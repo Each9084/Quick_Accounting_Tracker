@@ -19,8 +19,10 @@
 
 ---
 
+![24.11.8.1](../asset/image/24.11.8.1.gif)
+![24.11.8.1](../assets/img/introduction/10clearcache.gif)
+
 ## 🧭 截图预览 功能展示
-<div align="center"><img src=accounting_tracker/assets/img/introduction/10clearcache.gif width = 60%></div> 
 
 |  #   | 功能说明                                        | 截图                                                         |
 | :--: | ----------------------------------------------- | ------------------------------------------------------------ |
