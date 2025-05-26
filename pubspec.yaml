@@ -34,6 +34,11 @@ dependencies:
   sqflite: ^2.3.3+1
   path: ^1.9.0
   path_provider: ^2.1.5
+  month_year_picker: ^0.4.0+1
+  wave: ^0.2.2
+  provider: ^6.1.5
+  url_launcher: ^6.3.1
+  flutter_phoenix: ^1.1.1
 
 dev_dependencies:
   flutter_test:
@@ -54,8 +59,8 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
+  assets:
+    - assets/img/weChat_QRCode.jpg
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
