@@ -1,6 +1,10 @@
 //数据库初始化
 
+import 'dart:io';
+
+import 'package:accounting_tracker/data/dao/bill_category_dao.dart';
 import 'package:accounting_tracker/data/db/migration_v1.dart';
+import 'package:accounting_tracker/data/dataModel/bill_category_entity.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -18,6 +22,7 @@ class AppDatabase {
   AppDatabase._internal();
 
   static Database? _db;
+  BillCategoryDao? _billCategoryDao;
 
   //懒加载 getter，用来获取数据库实例
   static Future<Database> get database async {
@@ -25,6 +30,14 @@ class AppDatabase {
     //异步初始化数据库
     _db = await _initDatabase();
     return _db!;
+  }
+
+  // 懒加载 获取 BillCategoryDao 实例
+  Future<BillCategoryDao> getBillCategoryDao() async {
+    if (_billCategoryDao != null) return _billCategoryDao!;
+    final db = await database;
+    _billCategoryDao = BillCategoryDao(db);
+    return _billCategoryDao!;
   }
 
   static Future<Database> _initDatabase() async {
@@ -51,6 +64,26 @@ class AppDatabase {
           await db.execute("PRAGMA foreign_keys = ON");
       }
     );
+  }
+
+  //清除数据库文件
+  static Future<void> deleteDatabaseFile() async {
+    final dbPath = await getDatabasesPath();
+    final path = join(dbPath, "accounting.db");
+
+    // 关闭已打开的数据库连接
+    if (_db != null) {
+      await _db!.close();
+      _db = null;
+    }
+
+    final dbFile = File(path);
+    if (await dbFile.exists()) {
+      await dbFile.delete();
+      print("数据库文件已删除");
+    } else {
+      print("数据库文件不存在");
+    }
   }
 
 }
