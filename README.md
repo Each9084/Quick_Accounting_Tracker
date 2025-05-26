@@ -20,7 +20,10 @@
 ---
 
 ![24.11.8.1](../asset/image/24.11.8.1.gif)
-!1[24.11.8.1](../assets/img/introduction/10clearcache.gif)
+!1(../assets/img/introduction/10clearcache.gif)
+
+### 主页面：显示当月账单、总资产卡片、添加按钮等
+<img src="accounting_tracker/assets/img/introduction/1mainpage.gif" width="60%">
 
 ## 🧭 截图预览 功能展示
 
