@@ -1,49 +1,79 @@
 # 📒 Quick Accounting Tracker
 
-> 一款典雅简约、功能实用的 Flutter 记账助手应用。专为记录日常收入支出、管理财务分类而设计，支持本地离线保存、分类管理、自定义键盘、国际化与夜间模式。
-
-![Platform](https://img.shields.io/badge/Platform-Flutter-blue)  
-![License](https://img.shields.io/badge/License-MIT-green)  
-![Language](https://img.shields.io/badge/Language-Dart-lightgrey)
+> 🧾 一款典雅简约、功能实用的 Flutter 记账助手应用。  
+> 🎯 记录日常收入支出，管理分类，支持离线保存、国际化与夜间模式。
 
 ---
 
-## ✨ 项目亮点
+## ✨ 功能亮点
 
-- 🧩 极简本地记账体验（支持 SQLite 离线持久化）
-- 📅 支持按月分页浏览账单，滑动加载
-- 🔍 自定义键盘 + 分类图标 + 金额校验
+- 🧩 极简本地记账体验（SQLite 离线持久化）
+- 📅 按月分页浏览账单，支持滑动加载
+- 🔢 自定义键盘 + 分类图标 + 金额校验
 - 🌙 支持暗黑模式切换
 - 🌐 多语言支持（中文 & English）
 - 🗃️ 分类管理：系统分类 + 自定义分类
-- 🔄 动态波浪背景，典雅视觉风格
+- 🌊 动态波浪背景，典雅视觉风格
 - 🛠️ 支持账单编辑 / 删除 / 查询
 - 📝 版本更迭时间轴（Version Timeline）
 
 ---
 
-## 🧭 截图预览
+## 🧭 截图预览 功能展示
 
-> 待添加：你可以上传一些 `screenshots/` 图片到 GitHub 仓库，并嵌入展示。
+|  #   | 功能说明                                        | 截图                                                         |
+| :--: | ----------------------------------------------- | ------------------------------------------------------------ |
+|  1️⃣   | 主页面：显示当月账单、总资产卡片、添加按钮等    | ![1mainpage]<img src = ../accounting_tracker/assets/img/introduction/1mainpage.gif width = 60% > |
+|  2️⃣   | 添加账单：支持自定义键盘、备注、图标分类等      | ![2addpage]<img src =../accounting_tracker/assets/img/introduction/2addpage.gif width = 60%> |
+|  3️⃣   | 删除账单：通过滑动删除并展示红色提示背景        | ![3delete]<img src = ../accounting_tracker/assets/img/introduction/3delete.gif width = 60%> |
+|  4️⃣   | 到达指定日期 / 搜索功能（模糊查询）             | ![4search]<img src =../accounting_tracker/assets/img/introduction/4search.gif width = 60%> |
+|  5️⃣   | 夜间模式：支持系统同步或手动切换主题            | ![5nightmode]<img src =../accounting_tracker/assets/img/introduction/5nightmode.gif width = 60%> |
+|  6️⃣   | 多语言支持：中文 / English 实时切换             | ![6multilanguage]<img src =../accounting_tracker/assets/img/introduction/6multilanguage.gif width = 60%> |
+|  7️⃣   | 分类管理：用户可添加、编辑、删除分类            | ![7addcategory]<img src =../accounting_tracker/assets/img/introduction/7addcategory.gif width=60%> |
+|  8️⃣   | 反馈页面：支持 GitHub issue、邮箱、B 站私信反馈 | ![8feedback]<img src =../accounting_tracker/assets/img/introduction/8feedback.gif width = 60%> |
+|  9️⃣   | 版本回顾：时间轴展示每个版本更新记录            | ![9update]<img src =../accounting_tracker/assets/img/introduction/9update.gif width=60%> |
+|  🔟   | 清除缓存：一键重置账本、分类等信息              | ![10clearcache]<img src =../accounting_tracker/assets/img/introduction/10clearcache.gif width = 60%> |
 
 ---
 
-## 🗂️ 项目结构（节选）
+## 🗂️ 项目结构
 
+```
 lib/
- ├── data/                  # 数据模型与 SQLite DAO
- ├── models/                # 账单、分类模型
- ├── screens/               # 各页面（主页、设置页、分类管理等）
- ├── theme/                 # 主题设置与切换
- ├── widgets/               # 通用组件（波浪背景、账单卡片等）
- ├── l10n/                  # 多语言资源文件（strings_zh.dart 等）
- └── main.dart              # 应用入口
+├── data/            # 本地数据库访问（DAO、Entity、Migration）
+│   ├── dao/         # DAO 层（如 UserDao、BillDao）
+│   ├── db/          # AppDatabase 初始化与迁移
+│   ├── dataModel/   # SQLite Entity 数据结构
+│   └── repository/  # Repository 封装
+├── models/          # UI 业务模型（如 Bill, Category）
+├── screens/         # 页面视图（主页、设置页等）
+├── widgets/         # 自定义组件
+├── l10n/            # 多语言资源管理
+├── theme/           # 夜间/日间主题
+└── main.dart        # 项目入口
+```
+
+| 层级     | 模块          | 职责说明                           | 示例文件               |
+| -------- | ------------- | ---------------------------------- | ---------------------- |
+| 数据库   | `db/`         | 创建数据库与迁移                   | `app_database.dart`    |
+| 数据模型 | `dataModel/`  | Entity 定义，映射数据库字段        | `user_entity.dart`     |
+| DAO 层   | `dao/`        | 数据库操作封装（增删改查）         | `bill_dao.dart`        |
+| 映射层   | `mapper/`     | 数据模型与业务模型转换             | `bill_mapper.dart`     |
+| 仓储层   | `repository/` | 整合 DAO，封装业务逻辑调用入口     | `user_repository.dart` |
+| 服务层   | `service/`    | 高级逻辑控制（如初始化、事务处理） | `bill_service.dart`    |
+| UI 层    | `screens/` 等 | 页面与组件显示                     | `bill_home_page.dart`  |
 
 ---
 
-## 🚀 如何运行
+## 📥 下载与体验
 
-1. ✅ 安装 Flutter SDK，并配置好 Android 环境（推荐真机调试）
+📦 [点击前往 Release 页面](https://github.com/Each9084/Quick_Accounting_Tracker/releases) 下载安卓 APK 文件安装体验。
+
+---
+
+## 🚀 快速开始
+
+1. ✅ 安装 Flutter SDK，并配置 Android 开发环境
 2. ✅ 克隆项目：
 
 ```bash
@@ -57,66 +87,59 @@ cd Quick_Accounting_Tracker
 flutter pub get
 ```
 
-4. ✅ 运行：
+4. ✅ 启动项目：
 
 ```bash
 flutter run
 ```
 
-------
+---
 
-## 🌐 多语言与暗黑模式
+## 🌐 多语言与夜间模式
 
-- 当前支持语言：
-  - 🇨🇳 简体中文（默认）
-  - 🇺🇸 English
-- 在设置页可切换语言（无需重启）
-- 主题支持明亮 / 夜间模式切换，亦可跟随系统设置自动切换
+- 支持语言切换：
+  - 🇨🇳 简体中文
+  - 🇺🇸 English（默认）
+- 在设置页面实时切换语言（无需重启）
+- 支持亮 / 暗模式切换，可跟随系统设置
 
-------
+---
 
 ## 🧾 更新日志（Version Timeline）
 
-在侧边栏可查看完整版本更迭记录，呈现为竖状时间轴：
+> 📅 项目始于 2024 年 7 月 23 日，持续更新中  
+> 🔖 当前版本：`v0.2.4`（2025-05-25）
 
-> 📅 项目从 2024 年 7 月 23 日立项，逐步加入了自定义键盘、UI 重构、国际化支持等内容。
->  最新版本：`v0.2.4` （2025-05-25）
+📌 点击 App 侧边栏“版本更迭”可查看完整时间线。
 
-------
+---
 
 ## 📬 用户反馈与参与
 
-欢迎通过以下方式向我提交反馈或建议：
+欢迎通过以下方式反馈 Bug 或建议：
 
-| 类型         | 跳转方式                                                     |
-| ------------ | ------------------------------------------------------------ |
-| 📮 提交 Issue | [GitHub Issues](https://github.com/Each9084/Quick_Accounting_Tracker/issues) |
-| 📧 邮件反馈   | [each9084@gmail.com](mailto:each9084@gmail.com)              |
-| 📷 微信扫码   | 请在 App 的反馈页面扫码                                      |
-| 📺 Bilibili   | [我的主页](https://space.bilibili.com/34878493?spm_id_from=333.337.0.0) |
+| 渠道           | 链接                                                         |
+| -------------- | ------------------------------------------------------------ |
+| 📮 GitHub Issue | [GitHub Issues](https://github.com/Each9084/Quick_Accounting_Tracker/issues) |
+| 📧 邮件反馈     | [each9084@gmail.com](mailto:each9084@gmail.com)              |
+| 📷 微信扫码     | 请在 App 内“反馈页面”扫码                                    |
+| 📺 Bilibili     | [B 站主页](https://space.bilibili.com/34878493?spm_id_from=333.337.0.0) |
 
-------
+---
 
-## 📌 TODO（待办计划）
+## 🚧 开发计划（Roadmap）
 
--  云端同步（Firebase / Supabase）
--  多账本支持（切换生活 / 房租等）
--  OCR 扫描小票识别备注
--  高级筛选与统计图表展示
--  导出为 CSV / Excel 报表
+- ✅ 多语言支持（完成）
+- ✅ 分类管理模块（完成）
+- ✅ 自定义键盘（完成）
+- ✅ 波浪视觉风格（完成）
+- 🕐 OCR 小票识别备注（计划中）
+- 🕐 Firebase 云同步（计划中）
+- 🕐 多账本支持（计划中）
+- 🕐 数据导出功能（CSV / Excel）
 
-------
+---
 
 ## 📄 License
 
-本项目基于 MIT 开源协议，欢迎 Fork 与二次开发。
-
-| 层级                | 代表文件/文件夹              | 主要职责                            | 示例文件                   |
-| ----------------- | --------------------- | ------------------------------- | ---------------------- |
-| 1️⃣ 数据库定义层        | `db/`                 | 创建、配置 SQLite 数据库和表结构            | `app_database.dart`    |
-| 2️⃣ 数据模型层         | `dataModel/`          | 与数据库字段 1:1 对应，适合 SQLite 存取      | `user_entity.dart`     |
-| 3️⃣ DAO 层         | `dao/`                | 封装对表的 **增删改查（CRUD）** 操作         | `user_dao.dart`        |
-| 4️⃣ Mapper 层      | `mapper/`             | 将数据库模型（Entity） ↔️ 业务模型（Model）转换 | `user_mapper.dart`     |
-| 5️⃣ Repository 层  | `repository/`         | 整合多个 DAO，进行**抽象封装**，方便上层调用      | `user_repository.dart` |
-| 6️⃣ Service 层（推荐） | `service/`            | 负责**业务流程逻辑**，如初始化、校验、事务等        | `user_service.dart`    |
-| 7️⃣ UI 层          | `screens/`、`widgets/` | 调用 service / repository 获取数据并渲染 | `bill_home_page.dart`  |
+本项目基于 MIT 协议开源，欢迎自由使用、Fork 与二次开发。
