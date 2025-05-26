@@ -2,7 +2,7 @@ import 'dart:ffi';
 
 import 'package:flutter/material.dart';
 
-import '../../l10n/strings.dart';
+import '../../l10n/Strings.dart';
 import '../../models/bill.dart';
 
 // 单个卡片
@@ -86,7 +86,7 @@ class BillCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      bill.billCategory.name,
+                      bill.billCategory.getLocalizedName(),
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
@@ -131,7 +131,7 @@ class BillCard extends StatelessWidget {
                     height: 4,
                   ),
                   Text(
-                    isIncome ? Strings.get("income") : Strings.get("expense"),
+                    isIncome ? StringsMain.get("income") : StringsMain.get("expense"),
                     style: TextStyle(
                         color: isIncome ? Colors.greenAccent : Colors.redAccent,
                         fontSize: 12),

@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:accounting_tracker/l10n/Strings.dart';
 
-//删除的背景滑动组件
 class SwipeBackground extends StatelessWidget {
-  final String label;
   final IconData icon;
   final Color color;
   final Alignment alignment;
 
   const SwipeBackground({
     super.key,
-    this.label = "删除",
     this.icon = Icons.delete_outline,
     this.color = Colors.redAccent,
     this.alignment = Alignment.centerLeft,
@@ -29,7 +27,10 @@ class SwipeBackground extends StatelessWidget {
         children: [
           Icon(icon, color: Colors.white, size: 26),
           const SizedBox(width: 8),
-          Text(label, style: const TextStyle(color: Colors.white, fontSize: 16)),
+          Text(
+            StringsMain.get("delete"),
+            style: const TextStyle(color: Colors.white, fontSize: 16),
+          ),
         ],
       ),
     );
