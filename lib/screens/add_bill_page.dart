@@ -50,6 +50,9 @@ class _AddBillPageState extends State<AddBillPage> {
   //限制最大长度
   int maxInputLength = 16;
 
+  //判断是初次添加 还是 之后编辑的
+  bool _isFirstInput = true;
+
   //监听note输入文本框
   final TextEditingController _noteController = TextEditingController();
 
@@ -59,7 +62,6 @@ class _AddBillPageState extends State<AddBillPage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
 
     if (widget.billToEdit != null) {
@@ -69,6 +71,13 @@ class _AddBillPageState extends State<AddBillPage> {
       _selectedCategory = edit.billCategory;
       _inputAmount = edit.amount.toStringAsFixed(2);
       _noteController.text = edit.note ?? "";
+
+      //清空 displayExpression 防止拼接旧内容,
+      //如果不先点击清空,直接输入新的数字金额就不发生变化
+      _displayExpression = "";
+      _isFirstInput = true; // 标记为首次输入
+    } else {
+      _isFirstInput = true; // 新账单也初始化
     }
 
     _loadCategories();
@@ -79,7 +88,11 @@ class _AddBillPageState extends State<AddBillPage> {
     if (user == null) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("未找到活跃用户")),
+          SnackBar(
+            content: Text(
+              StringsMain.get("no_active_users_found"),
+            ),
+          ),
         );
       }
       return;
@@ -97,7 +110,7 @@ class _AddBillPageState extends State<AddBillPage> {
         //即：是否仍然与 UI 树中的 Widget 关联）。
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("未找到分类信息,请添加分类")),
+            SnackBar(content: Text(StringsMain.get("no_category_info_found"))),
           );
         }
         return;
@@ -160,6 +173,15 @@ class _AddBillPageState extends State<AddBillPage> {
 
   void _handleKeyTap(String value) {
     setState(() {
+      // 如果是第一次 添加
+      if (_isFirstInput) {
+        // 清除旧值，只保留当前输入
+        _inputAmount = (value == ".") ? "0." : value;
+        _displayExpression = value;
+        _isFirstInput = false;
+        return;
+      }
+
       //避免多次小数点
       if (value == "." && _inputAmount.contains(".")) return;
 
@@ -243,7 +265,7 @@ class _AddBillPageState extends State<AddBillPage> {
     if (amount == null || amount <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text("请输入有效金额"),
+          content: Text(StringsMain.get("need_enter_valid_amount")),
           backgroundColor: Colors.redAccent,
         ),
       );
@@ -269,7 +291,7 @@ class _AddBillPageState extends State<AddBillPage> {
 
       if (user == null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("未找到活跃用户"), backgroundColor: Colors.redAccent),
+          SnackBar(content: Text(StringsMain.get("no_active_users_found")), backgroundColor: Colors.redAccent),
         );
         return;
       }
@@ -282,7 +304,7 @@ class _AddBillPageState extends State<AddBillPage> {
         await repository.updateBill(newBill, userId: user.id!);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text("编辑账单 目前账单已更新"),
+            content: Text(StringsMain.get("edit_Bill_updated")),
             backgroundColor: Colors.greenAccent,
           ),
         );
@@ -290,7 +312,7 @@ class _AddBillPageState extends State<AddBillPage> {
         await repository.insertBill(newBill, userId: user.id!);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text("添加账单 目前账单已保存"),
+            content: Text(StringsMain.get("add_Bill_saved")),
             backgroundColor: Colors.greenAccent,
           ),
         );
@@ -300,7 +322,7 @@ class _AddBillPageState extends State<AddBillPage> {
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text("保存失败: $e"),
+          content: Text("${StringsMain.get("save_failed")}: $e"),
         ),
       );
     }
