@@ -1,44 +1,42 @@
-// model <=> map 转换逻辑
-//引入 Mapper 层来解耦，避免直接在 UI 操作数据库结构。
-//Mapper 是用来连接数据库结构和业务逻辑结构的桥梁
-//它将数据库实体 (Entity) 转换成界面/业务可用的模型 (Model)
-//反之亦然
-
-//把 BillEntity（用于数据库） 和 Bill（用于 UI 展示）解耦。
 import 'package:accounting_tracker/data/dataModel/bill_entity.dart';
-import 'package:accounting_tracker/models/billCategory.dart';
-import 'package:flutter/cupertino.dart';
-
+import 'package:flutter/material.dart';
 import '../../models/bill.dart';
+import '../../models/billCategory.dart';
 
 class BillMapper {
-  //从数据库结构 → UI 模型 从数据库读取账单，准备在界面上展示
-  static Bill toModel(BillEntity billEntity) {
+  // 从数据库 Entity 转换为 UI 模型
+  static Bill toModel(BillEntity entity) {
     return Bill(
-        id: billEntity.id.toString(),
-        amount: billEntity.amount,
-        note: billEntity.note,
-        date: DateTime.parse(billEntity.date),
-        billCategory: BillCategory(
-          name: billEntity.category_name,
-          // Material 图标系统依赖 MaterialIcons 字体来识别 IconData。
-          iconData: IconData(billEntity.category_icon_code,
-              fontFamily: "MaterialIcons"),
+      id: entity.id.toString(),
+      amount: entity.amount,
+      note: entity.note,
+      date: DateTime.parse(entity.date),
+      isIncome: entity.is_income,
+      billCategory: BillCategory.fromEntity(
+        id: null, // category 本身非独立表，暂不支持 ID
+        nameKey: entity.category_name,
+        iconData: IconData(
+          entity.category_icon_code,
+          fontFamily: "MaterialIcons",
         ),
-        isIncome: billEntity.is_income);
+        isUserDefined: false,
+        userId: null,
+        isIncome: entity.is_income,
+      ),
+    );
   }
 
-  //从 UI 模型 → 数据库结构 输入的账单保存到数据库时
-  static BillEntity toEntity(Bill billModel, {required int userId}) {
+  // 从 UI 模型转换为数据库 Entity
+  static BillEntity toEntity(Bill bill, {required int userId}) {
     return BillEntity(
-      id: int.tryParse(billModel.id),
+      id: int.tryParse(bill.id),
       user_id: userId,
-      amount: billModel.amount,
-      note: billModel.note ?? "",
-      category_name: billModel.billCategory.name,
-      category_icon_code: billModel.billCategory.iconData.codePoint,
-      is_income: billModel.isIncome,
-      date: billModel.date.toIso8601String(),
+      amount: bill.amount,
+      note: bill.note ?? '',
+      category_name: bill.billCategory.nameKey,
+      category_icon_code: bill.billCategory.iconData.codePoint,
+      is_income: bill.isIncome,
+      date: bill.date.toIso8601String(),
     );
   }
 }
