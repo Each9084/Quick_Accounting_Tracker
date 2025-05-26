@@ -52,14 +52,14 @@ class DBTestPage extends StatelessWidget {
     );
 
     final id = await UserDao.insertUser(user);
-    debugPrint("✅ 插入用户成功，id = $id");
+    debugPrint("插入用户成功，id = $id");
   }
 
   /// 插入账单（前提是至少有一个用户）
   Future<void> _insertTestBill() async {
     final users = await UserDao.getAllUsers();
     if (users.isEmpty) {
-      debugPrint("⚠️ 插入账单失败：请先插入用户");
+      debugPrint("插入账单失败：请先插入用户");
       return;
     }
 
@@ -75,21 +75,21 @@ class DBTestPage extends StatelessWidget {
     );
 
     final id = await BillDao.insertBill(bill);
-    debugPrint("✅ 插入账单成功，id = $id");
+    debugPrint("插入账单成功，id = $id");
   }
 
   /// 查询所有账单
   Future<void> _queryBills() async {
     final users = await UserDao.getAllUsers();
     if (users.isEmpty) {
-      debugPrint("⚠️ 无用户，无法查询账单");
+      debugPrint("无用户，无法查询账单");
       return;
     }
 
     final bills = await BillDao.getBillsByUser(users.first.id!);
-    debugPrint("📦 共查询到账单 ${bills.length} 条");
+    debugPrint("共查询到账单 ${bills.length} 条");
     for (var bill in bills) {
-      debugPrint("💰 金额：${bill.amount}，备注：${bill.note}，日期：${bill.date}");
+      debugPrint("金额：${bill.amount}，备注：${bill.note}，日期：${bill.date}");
     }
   }
 
@@ -97,6 +97,6 @@ class DBTestPage extends StatelessWidget {
   Future<void> _deleteAll() async {
     await BillDao.clearAll();
     await UserDao.clearAll();
-    debugPrint("🗑️ 所有数据已清空");
+    debugPrint("所有数据已清空");
   }
 }
