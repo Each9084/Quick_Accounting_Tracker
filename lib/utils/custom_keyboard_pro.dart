@@ -1,9 +1,9 @@
 import 'dart:ffi';
 
-import 'package:accounting_tracker/l10n/strings.dart';
+import 'package:accounting_tracker/l10n/Strings.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import '../l10n/strings.dart';
+import '../l10n/Strings.dart';
 
 class CustomKeyboardPro extends StatelessWidget {
   //当前是否在运算状态,"+","-"或者 就是" "的确认
@@ -83,12 +83,12 @@ class CustomKeyboardPro extends StatelessWidget {
   TableRow _buildLastRow(double keyHeight) {
     return TableRow(
       children: [
-        _buildKey(Strings.get("clear"), onClear,
+        _buildKey(StringsMain.get("clear"), onClear,
             isClear: true, height: keyHeight),
         _buildKey("0", () => onKeyTap("0"), height: keyHeight),
         _buildKey(".", () => onKeyTap("."), height: keyHeight),
         _buildKey(
-          operator == "" ? Strings.get("confirm") : "=",
+          operator == "" ? StringsMain.get("confirm") : "=",
           operator == "" ? onConfirm : onEquals,
           isConfirm: true,
           height: keyHeight,
