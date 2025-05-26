@@ -21,7 +21,7 @@
 
 ## 🧭 截图预览 功能展示
 
-<img src =../accounting_tracker/assets/img/introduction/2addpage.gif width = 60%> 
+<img src ="accounting_tracker/assets/img/introduction/2addpage.gif" width = 60%> 
 
 <img src =../accounting_tracker/assets/img/weChat_QRCode.jpg width = 60%>
 
