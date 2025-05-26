@@ -20,7 +20,7 @@
 ---
 
 ![24.11.8.1](../asset/image/24.11.8.1.gif)
-![24.11.8.1](../assets/img/introduction/10clearcache.gif)
+!1[24.11.8.1](../assets/img/introduction/10clearcache.gif)
 
 ## 🧭 截图预览 功能展示
 
