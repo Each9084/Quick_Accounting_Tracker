@@ -23,6 +23,10 @@
 
 <div align="center"><img src =../accounting_tracker/assets/img/introduction/2addpage.gif width = 60%> </div>
 
+<div align="center"><img src =../accounting_tracker/assets/img/weChat_QRCode.jpg width = 60%> </div>
+
+
+
 |  #   | 功能说明                                        | 截图                                                         |
 | :--: | ----------------------------------------------- | ------------------------------------------------------------ |
 |  1️⃣   | 主页面：显示当月账单、总资产卡片、添加按钮等    | <p align="center"><img src = ../accounting_tracker/assets/img/introduction/1mainpage.gif width = 60% ></p> |
