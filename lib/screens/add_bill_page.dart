@@ -1,6 +1,7 @@
 import 'package:accounting_tracker/data/dao/user_dao.dart';
 import 'package:accounting_tracker/data/repository/bill_repository.dart';
-import 'package:accounting_tracker/l10n/strings.dart';
+import 'package:accounting_tracker/l10n/Strings.dart';
+import 'package:accounting_tracker/service/category_service.dart';
 import 'package:accounting_tracker/widgets/amount_input_bar.dart';
 import 'package:accounting_tracker/widgets/custom_keyboard.dart';
 import 'package:accounting_tracker/utils/custom_keyboard_pro.dart';
@@ -25,6 +26,10 @@ class AddBillPage extends StatefulWidget {
 
 class _AddBillPageState extends State<AddBillPage> {
   bool isIncome = false;
+
+  //判断，不渲染主要内容，直到分类加载完：
+  bool _isCategoryLoaded = false;
+
   DateTime _selectedDate = DateTime.now();
 
   // 当前运算符：“+” 或 “-” 或 "" 空表示保存
@@ -45,7 +50,12 @@ class _AddBillPageState extends State<AddBillPage> {
   //限制最大长度
   int maxInputLength = 16;
 
+  //监听note输入文本框
   final TextEditingController _noteController = TextEditingController();
+
+  List<BillCategory> _expenseCategories = [];
+
+  List<BillCategory> _incomeCategories = [];
 
   @override
   void initState() {
@@ -59,30 +69,53 @@ class _AddBillPageState extends State<AddBillPage> {
       _selectedCategory = edit.billCategory;
       _inputAmount = edit.amount.toStringAsFixed(2);
       _noteController.text = edit.note ?? "";
-    } else {
-      _selectedCategory = _expenseCategories[0];
     }
+
+    _loadCategories();
   }
 
-  final List<BillCategory> _expenseCategories = [
-    BillCategory(name: "餐饮", iconData: Icons.fastfood_outlined),
-    BillCategory(name: "公交", iconData: Icons.directions_bus_filled_outlined),
-    BillCategory(name: "购物", iconData: Icons.shopping_cart_outlined),
-    BillCategory(name: "娱乐", iconData: Icons.sports_baseball_outlined),
-    BillCategory(name: "其他", iconData: Icons.miscellaneous_services_outlined),
-    BillCategory(name: "其他", iconData: Icons.miscellaneous_services_outlined),
-    BillCategory(name: "其他", iconData: Icons.miscellaneous_services_outlined),
-    BillCategory(name: "其他", iconData: Icons.miscellaneous_services_outlined),
-    BillCategory(name: "其他", iconData: Icons.miscellaneous_services_outlined),
-    BillCategory(name: "其他", iconData: Icons.miscellaneous_services_outlined),
-  ];
+  Future<void> _loadCategories() async {
+    final user = await UserDao.getActiveUser();
+    if (user == null) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("未找到活跃用户")),
+        );
+      }
+      return;
+    }
 
-  final List<BillCategory> _incomeCategories = [
-    BillCategory(name: "工资", iconData: Icons.wallet),
-    BillCategory(name: "兼职", iconData: Icons.work_outline),
-    BillCategory(name: "理财", iconData: Icons.savings_outlined),
-    BillCategory(name: "其他", iconData: Icons.miscellaneous_services_outlined),
-  ];
+    final expense = await CategoryService.getExpenseCategories(user.id!);
+    final income = await CategoryService.getIncomeCategories(user.id!);
+
+    //考虑 分类被删除完的情况
+    if (widget.billToEdit == null) {
+      // 在 setState 之前做初步判断，防止为空时出错
+      if ((isIncome && income.isEmpty) || (!isIncome && expense.isEmpty)) {
+        //mounted 是 State 类的一个 只读布尔属性，
+        //表示当前的 State 是否仍然“挂载”（
+        //即：是否仍然与 UI 树中的 Widget 关联）。
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("未找到分类信息,请添加分类")),
+          );
+        }
+        return;
+      }
+    }
+
+    setState(() {
+      _expenseCategories = expense;
+      _incomeCategories = income;
+
+      // 如果不是编辑状态，设置默认分类
+      if (widget.billToEdit == null) {
+        _selectedCategory =
+            isIncome ? _incomeCategories.first : _expenseCategories.first;
+      }
+      _isCategoryLoaded = true;
+    });
+  }
 
   //选择年月日
   void _pickDate() async {
@@ -280,180 +313,203 @@ class _AddBillPageState extends State<AddBillPage> {
     return Scaffold(
       //禁止因为键盘弹出而调整布局 很关键 不然会压缩底部键盘的空间
       resizeToAvoidBottomInset: false,
-        body: SafeArea(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                //返回按钮
-                IconButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  icon: Icon(Icons.arrow_back),
-                ),
-                //收支切换
-                Expanded(
-                  child: Center(
-                    child: ToggleButtons(
-                      isSelected: [
-                        !isIncome,
-                        isIncome,
-                      ],
+      body: SafeArea(
+        child: _isCategoryLoaded
+            ? Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(Strings.get("expense")),
-                        Text(Strings.get("income")),
+                        //返回按钮
+                        IconButton(
+                          onPressed: () => Navigator.of(context).pop(),
+                          icon: Icon(Icons.arrow_back),
+                        ),
+                        //收支切换
+                        Expanded(
+                          child: Center(
+                            child: ToggleButtons(
+                              isSelected: [
+                                !isIncome,
+                                isIncome,
+                              ],
+                              children: [
+                                Text(StringsMain.get("expense")),
+                                Text(StringsMain.get("income")),
+                              ],
+                              borderRadius: BorderRadius.circular(10),
+                              selectedColor: Colors.white,
+                              fillColor: Colors.blueAccent,
+                              color: Colors.black54,
+                              constraints:
+                                  BoxConstraints(minHeight: 36, minWidth: 100),
+                              onPressed: (int index) {
+                                setState(() {
+                                  //从支出切换到 收入,默认选择第一个分类
+                                  isIncome = index == 1;
+                                  final newList = isIncome
+                                      ? _incomeCategories
+                                      : _expenseCategories;
+                                  if (newList.isNotEmpty) {
+                                    _selectedCategory = newList.first;
+                                  }
+                                });
+                              },
+                            ),
+                          ),
+                        ),
+
+                        InkWell(
+                          onTap: _pickDate,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.calendar_month_outlined),
+                              SizedBox(
+                                height: 4,
+                              ),
+                              Text(
+                                "${_formatDateTime(_selectedDate)}",
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        //日期选择
                       ],
-                      borderRadius: BorderRadius.circular(10),
-                      selectedColor: Colors.white,
-                      fillColor: Colors.blueAccent,
-                      color: Colors.black54,
-                      constraints: BoxConstraints(minHeight: 36, minWidth: 100),
-                      onPressed: (int index) {
-                        setState(() {
-                          if (index == 0) {
-                            isIncome = false;
-                          } else {
-                            isIncome = true;
-                          }
-                        });
-                      },
                     ),
                   ),
-                ),
-
-                InkWell(
-                  onTap: _pickDate,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.calendar_month_outlined),
-                      SizedBox(
-                        height: 4,
-                      ),
-                      Text(
-                        "${_formatDateTime(_selectedDate)}",
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
+                  AmountInputBar(
+                    category: _selectedCategory,
+                    amountText: _displayExpression.isNotEmpty
+                        ? _displayExpression
+                        : _inputAmount,
                   ),
-                ),
-                //日期选择
-              ],
-            ),
-          ),
-          AmountInputBar(
-            category: _selectedCategory,
-            amountText: _displayExpression.isNotEmpty
-                ? _displayExpression
-                : _inputAmount,
-          ),
-          //const Divider(),
-          SizedBox(
-            height: 290,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              child: GridView.count(
-                //每一行有几个内容
-                crossAxisCount: 4,
-                //每两个行之间的间距
-                mainAxisSpacing: 10,
-                //每两个列之间的间距
-                crossAxisSpacing: 10,
-                children: (isIncome ? _incomeCategories : _expenseCategories)
-                    .map((category) {
-                  final isSelected = _selectedCategory.name == category.name;
-                  return GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        _selectedCategory = category;
-                      });
-                    },
-                    child: AnimatedContainer(
-                      duration: Duration(milliseconds: 200),
-                      curve: Curves.easeInOut,
-                      decoration: BoxDecoration(
-                        color: isSelected ? Colors.blue.shade200 : Colors.white,
-                        border: Border.all(
-                          color: isSelected
-                              ? Colors.blueAccent
-                              : Colors.grey.shade300,
-                          width: 1,
+                  //const Divider(),
+                  SizedBox(
+                    height: 290,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 8),
+                      child: GridView.builder(
+                        itemCount:
+                            (isIncome ? _incomeCategories : _expenseCategories)
+                                .length,
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          //每一行有几个内容
+                          crossAxisCount: 4,
+                          //每两个行之间的间距
+                          mainAxisSpacing: 10,
+                          //每两个列之间的间距
+                          crossAxisSpacing: 10,
                         ),
-                        borderRadius: BorderRadius.circular(14),
-                        boxShadow: [
-                          if (isSelected)
-                            BoxShadow(
-                              color: Colors.blueAccent,
-                              blurRadius: 6,
-                              offset: Offset(0, 3),
-                            )
-                          else
-                            BoxShadow(
-                              color: Colors.black12,
-                              blurRadius: 4,
-                              offset: Offset(1, 2),
-                            )
-                        ],
-                      ),
-                      padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-                      child: AnimatedScale(
-                        //选中放大1.2
-                        scale: isSelected ? 1.2 : 1.0,
-                        duration: Duration(milliseconds: 150),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              category.iconData,
-                              size: 26,
-                              color: isSelected
-                                  ? Colors.blueAccent
-                                  : Colors.black87,
-                            ),
-                            SizedBox(
-                              height: 4,
-                            ),
-                            Text(
-                              category.name,
-                              style: TextStyle(
-                                fontSize: 13,
+                        itemBuilder: (context, index) {
+                          final category = (isIncome
+                              ? _incomeCategories
+                              : _expenseCategories)[index];
+
+                          final isSelected = _selectedCategory.nameKey ==
+                                  category.nameKey &&
+                              _selectedCategory.iconData == category.iconData;
+                          return GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                _selectedCategory = category;
+                              });
+                            },
+                            child: AnimatedContainer(
+                              duration: Duration(milliseconds: 200),
+                              curve: Curves.easeInOut,
+                              decoration: BoxDecoration(
                                 color: isSelected
-                                    ? Colors.blueAccent
-                                    : Colors.black87,
+                                    ? Colors.blue.shade200
+                                    : Colors.white,
+                                border: Border.all(
+                                  color: isSelected
+                                      ? Colors.blueAccent
+                                      : Colors.grey.shade300,
+                                  width: 1,
+                                ),
+                                borderRadius: BorderRadius.circular(14),
+                                boxShadow: [
+                                  if (isSelected)
+                                    BoxShadow(
+                                      color: Colors.blueAccent,
+                                      blurRadius: 6,
+                                      offset: Offset(0, 3),
+                                    )
+                                  else
+                                    BoxShadow(
+                                      color: Colors.black12,
+                                      blurRadius: 4,
+                                      offset: Offset(1, 2),
+                                    )
+                                ],
+                              ),
+                              padding: EdgeInsets.symmetric(
+                                  vertical: 8, horizontal: 8),
+                              child: AnimatedScale(
+                                //选中放大1.2
+                                scale: isSelected ? 1.2 : 1.0,
+                                duration: Duration(milliseconds: 150),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      category.iconData,
+                                      size: 26,
+                                      color: isSelected
+                                          ? Colors.blueAccent
+                                          : Colors.black87,
+                                    ),
+                                    SizedBox(
+                                      height: 4,
+                                    ),
+                                    Text(
+                                      category.getLocalizedName(),
+                                      style: TextStyle(
+                                        fontSize: 13,
+                                        color: isSelected
+                                            ? Colors.blueAccent
+                                            : Colors.black87,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
-                          ],
-                        ),
+                          );
+                        },
                       ),
                     ),
-                  );
-                }).toList(),
-              ),
-            ),
-          ),
-          NoteInputBar(controller: _noteController),
+                  ),
+                  NoteInputBar(controller: _noteController),
 
-          Expanded(
-            //height: MediaQuery.of(context).size.height * 0.5,
-            flex: 1,
-            child: CustomKeyboardPro(
-              onKeyTap: _handleKeyTap,
-              onDelete: _handleDelete,
-              onConfirm: _handleConfirm,
-              operator: _operator,
-              onEquals: _handleEquals,
-              onOperatorTap: _handleOperatorTap,
-              onClear: _handleClear,
-            ),
-          ),
-        ],
+                  Expanded(
+                    //height: MediaQuery.of(context).size.height * 0.5,
+                    flex: 1,
+                    child: CustomKeyboardPro(
+                      onKeyTap: _handleKeyTap,
+                      onDelete: _handleDelete,
+                      onConfirm: _handleConfirm,
+                      operator: _operator,
+                      onEquals: _handleEquals,
+                      onOperatorTap: _handleOperatorTap,
+                      onClear: _handleClear,
+                    ),
+                  ),
+                ],
+              )
+            : //加载中
+            Center(child: CircularProgressIndicator()),
       ),
-    ));
+    );
   }
 }
