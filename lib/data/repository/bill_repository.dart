@@ -35,6 +35,13 @@ class BillRepository {
     return entities.map((entity) => BillMapper.toModel(entity)).toList();
   }
 
+  // 用于搜索功能：获取指定用户的所有账单（按时间倒序）
+  Future<List<Bill>> getAllBills({required int userId}) async {
+    final entities = await BillDao.getBillsByUser(userId);
+    return entities.map(BillMapper.toModel).toList();
+  }
+
+
   //获取某年某月的账单
   Future<List<Bill>> getBillsByMonth({
     required int userId,
