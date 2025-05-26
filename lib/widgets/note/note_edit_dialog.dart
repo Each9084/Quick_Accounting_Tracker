@@ -1,3 +1,4 @@
+import 'package:accounting_tracker/l10n/Strings.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -9,44 +10,72 @@ Future<String?> showNoteEditDialog({
 
   return showDialog<String>(
     context: context,
+    barrierDismissible: false,
     builder: (context) {
-      return MediaQuery.removeViewInsets(
-        removeBottom: true,// 移除底部键盘影响
-        context: context,
-        child: AlertDialog(
-          title: Row(
+      return Dialog(
+        backgroundColor: Colors.teal.shade600,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Text("添加备注"),
-              Spacer(),
-              IconButton(
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text("OCR 功能尚未实现")),
-                  );
-                },
-                icon: Icon(CupertinoIcons.camera_viewfinder),
+              // 标题和相机按钮
+              Row(
+                children: [
+                  Text(StringsMain.get("add_note"),
+                      style: TextStyle(fontSize: 18,color: Colors.deepOrange.shade100)),
+                  const Spacer(),
+                  IconButton(
+                    onPressed: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            StringsMain.get("ocr_not_implemented"),
+                          ),
+                        ),
+                      );
+                    },
+                    icon: const Icon(CupertinoIcons.camera_viewfinder),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              // 输入框区域（高度固定或最大高度）
+              SizedBox(
+                height: 120,
+                child: TextField(
+                  controller: tempController,
+                  maxLines: null,
+                  expands: true,
+                  autofocus: true,
+                  decoration:  InputDecoration(
+                    hintText: StringsMain.get("enter_notes"),
+                    border: OutlineInputBorder(),
+                    isDense: true,
+                    contentPadding: EdgeInsets.all(12),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              // 按钮
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                    onPressed: () => Navigator.of(context).pop(null),
+                    child:  Text(StringsMain.get("cancel")),
+                  ),
+                  const SizedBox(width: 8),
+                  ElevatedButton(
+                    onPressed: () =>
+                        Navigator.of(context).pop(tempController.text),
+                    child:  Text(StringsMain.get("save")),
+                  ),
+                ],
               ),
             ],
           ),
-          content: TextField(
-            controller: tempController,
-            autofocus: true,
-            maxLines: null,
-            decoration: InputDecoration(
-              hintText: "请输入备注内容",
-              border: OutlineInputBorder(),
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(null),
-              child: Text("取消"),
-            ),
-            ElevatedButton(
-              onPressed: () => Navigator.of(context).pop(tempController.text),
-              child: Text("保存"),
-            ),
-          ],
         ),
       );
     },
