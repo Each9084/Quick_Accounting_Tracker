@@ -1,3 +1,4 @@
+import 'package:accounting_tracker/l10n/Strings.dart';
 import 'package:accounting_tracker/widgets/bill/swip_background.dart';
 import 'package:flutter/material.dart';
 import 'package:accounting_tracker/models/bill.dart';
@@ -57,16 +58,16 @@ class MonthlyBillView extends StatelessWidget {
                 final confirmed = await showDialog<bool>(
                   context: context,
                   builder: (_) => AlertDialog(
-                    title: const Text("确认删除?"),
-                    content: const Text("你确定要删除这条账单吗?"),
+                    title:  Text(StringsMain.get("ask_for_confirm_delete_title")),
+                    content:  Text(StringsMain.get("ask_for_confirm_delete_text")),
                     actions: [
                       TextButton(
                         onPressed: () => Navigator.of(context).pop(false),
-                        child: const Text("取消"),
+                        child:  Text(StringsMain.get("cancel")),
                       ),
                       TextButton(
                         onPressed: () => Navigator.of(context).pop(true),
-                        child: const Text("删除", style: TextStyle(color: Colors.red)),
+                        child:  Text(StringsMain.get("delete"), style: TextStyle(color: Colors.red)),
                       ),
                     ],
                   ),
