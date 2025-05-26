@@ -1,7 +1,7 @@
 import 'package:accounting_tracker/widgets/note/note_edit_dialog.dart';
 import 'package:flutter/material.dart';
 
-import '../../l10n/strings.dart';
+import '../../l10n/Strings.dart';
 
 class NoteInputBar extends StatefulWidget {
   final TextEditingController controller;
@@ -57,7 +57,7 @@ class _NoteInputBarState extends State<NoteInputBar> {
           ),
         ),
         child: Text(
-          text.isEmpty ? "点击添加备注" : text,
+          text.isEmpty ? StringsMain.get("click_to_add_note") : text,
           style: TextStyle(
             color: text.isEmpty ? Colors.blueGrey : Colors.black87,
             fontSize: 15,
