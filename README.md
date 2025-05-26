@@ -20,20 +20,20 @@
 ---
 
 ## 🧭 截图预览 功能展示
-<div align="center"><img src = ../accounting_tracker/assets/img/introduction/1mainpage.gif width = 60% ></div>
+
 
 |  #   | 功能说明                                        | 截图                                                         |
 | :--: | ----------------------------------------------- | ------------------------------------------------------------ |
-|  1️⃣   | 主页面：显示当月账单、总资产卡片、添加按钮等    | <div align="center"><img src = ../accounting_tracker/assets/img/introduction/1mainpage.gif width = 60% ></div> |
-|  2️⃣   | 添加账单：支持自定义键盘、备注、图标分类等      | ![2addpage]<img src =../accounting_tracker/assets/img/introduction/2addpage.gif width = 60%> |
-|  3️⃣   | 删除账单：通过滑动删除并展示红色提示背景        | ![3delete]<img src = ../accounting_tracker/assets/img/introduction/3delete.gif width = 60%> |
-|  4️⃣   | 到达指定日期 / 搜索功能（模糊查询）             | ![4search]<img src =../accounting_tracker/assets/img/introduction/4search.gif width = 60%> |
-|  5️⃣   | 夜间模式：支持系统同步或手动切换主题            | ![5nightmode]<img src =../accounting_tracker/assets/img/introduction/5nightmode.gif width = 60%> |
-|  6️⃣   | 多语言支持：中文 / English 实时切换             | ![6multilanguage]<img src =../accounting_tracker/assets/img/introduction/6multilanguage.gif width = 60%> |
-|  7️⃣   | 分类管理：用户可添加、编辑、删除分类            | ![7addcategory]<img src =../accounting_tracker/assets/img/introduction/7addcategory.gif width=60%> |
-|  8️⃣   | 反馈页面：支持 GitHub issue、邮箱、B 站私信反馈 | ![8feedback]<img src =../accounting_tracker/assets/img/introduction/8feedback.gif width = 60%> |
-|  9️⃣   | 版本回顾：时间轴展示每个版本更新记录            | ![9update]<img src =../accounting_tracker/assets/img/introduction/9update.gif width=60%> |
-|  🔟   | 清除缓存：一键重置账本、分类等信息              | ![10clearcache]<img src =../accounting_tracker/assets/img/introduction/10clearcache.gif width = 60%> |
+|  1️⃣   | 主页面：显示当月账单、总资产卡片、添加按钮等    | <p align="center"><img src = ../accounting_tracker/assets/img/introduction/1mainpage.gif width = 60% ></p> |
+|  2️⃣   | 添加账单：支持自定义键盘、备注、图标分类等      | <div align="center"><img src =../accounting_tracker/assets/img/introduction/2addpage.gif width = 60%> </div>|
+|  3️⃣   | 删除账单：通过滑动删除并展示红色提示背景        | <div align="center"><img src = ../accounting_tracker/assets/img/introduction/3delete.gif width = 60%></div> |
+|  4️⃣   | 到达指定日期 / 搜索功能（模糊查询）             | <div align="center"><img src =../accounting_tracker/assets/img/introduction/4search.gif width = 60%> </div>|
+|  5️⃣   | 夜间模式：支持系统同步或手动切换主题            | <div align="center"><img src =../accounting_tracker/assets/img/introduction/5nightmode.gif width = 60%> </div>|
+|  6️⃣   | 多语言支持：中文 / English 实时切换             | <div align="center"><img src =../accounting_tracker/assets/img/introduction/6multilanguage.gif width = 60%> </div>|
+|  7️⃣   | 分类管理：用户可添加、编辑、删除分类            | <div align="center"><img src =../accounting_tracker/assets/img/introduction/7addcategory.gif width=60%> </div>|
+|  8️⃣   | 反馈页面：支持 GitHub issue、邮箱、B 站私信反馈 | <div align="center"><img src =../accounting_tracker/assets/img/introduction/8feedback.gif width = 60%> </div>|
+|  9️⃣   | 版本回顾：时间轴展示每个版本更新记录            | <div align="center"><img src =../accounting_tracker/assets/img/introduction/9update.gif width=60%> </div>|
+|  🔟   | 清除缓存：一键重置账本、分类等信息              | <div align="center"><img src =../accounting_tracker/assets/img/introduction/10clearcache.gif width = 60%></div> |
 
 ---
 
