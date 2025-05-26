@@ -31,7 +31,7 @@ class AmountInputBar extends StatelessWidget {
             width: 8,
           ),
           Text(
-            category.name,
+            category.getLocalizedName(),
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
           ),
           const Spacer(),
