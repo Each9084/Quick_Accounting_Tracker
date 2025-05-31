@@ -16,8 +16,6 @@ import 'theme/theme_notifier.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // 国际化语言,初始加载
-  StringsMain.load(Locale("en"));
 
   // 确保存在本地默认用户供本地使用
   await UserService.ensureLocalUserExists();
