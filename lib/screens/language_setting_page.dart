@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:provider/provider.dart';
 
 import '../l10n/language_notifier.dart';
@@ -47,7 +48,8 @@ class LanguageSettingPage extends StatelessWidget {
           : null,
       onTap: () {
         context.read<LanguageNotifier>().setLocale(locale);
-        Navigator.pop(context);
+        //重启整个 App 使语言切换生效
+        Phoenix.rebirth(context);
       },
     );
   }
