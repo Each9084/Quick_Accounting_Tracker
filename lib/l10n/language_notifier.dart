@@ -1,15 +1,25 @@
-
 import 'package:flutter/material.dart';
-import 'Strings.dart';
-//动态控制语言 封装语言切换逻辑
+import 'package:accounting_tracker/l10n/Strings.dart';
+
 class LanguageNotifier extends ChangeNotifier {
-  Locale _locale = const Locale("zh"); // 默认中文
+  Locale _locale = const Locale("en"); // 默认
 
   Locale get locale => _locale;
 
-  void setLocale(Locale locale) {
+  LanguageNotifier() {
+    _loadSavedLocale();
+  }
+
+  Future<void> setLocale(Locale locale) async {
     _locale = locale;
-    StringsMain.load(locale); // 加载语言包
+    await StringsMain.load(locale);
+    notifyListeners();
+  }
+
+  Future<void> _loadSavedLocale() async {
+    final savedLocale = await StringsMain.getSavedLocale();
+    _locale = savedLocale;
+    await StringsMain.load(savedLocale);
     notifyListeners();
   }
 }
