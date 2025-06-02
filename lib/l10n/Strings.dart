@@ -1,4 +1,4 @@
-// 公共统一导出（或管理语言切换）
+// 公共统一导出（或管理语言切换）加载多语言资源
 
 import 'dart:ui';
 
@@ -34,9 +34,12 @@ class StringsMain{
   }
 
   // 读取持久化的语言设置
-  static Future<Locale> getSavedLocale() async {
+  static Future<Locale?> getSavedLocale() async {
     final prefs = await SharedPreferences.getInstance();
-    final code = prefs.getString(_localeKey) ?? "en"; // 默认中文
+
+    final code = prefs.getString(_localeKey);
+    //没保存过就返回 null 为了适应 手机的本地语言
+    if (code == null) return null;
     return Locale(code);
   }
 }
