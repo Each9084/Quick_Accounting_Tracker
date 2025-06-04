@@ -62,8 +62,16 @@ class _SearchPageState extends State<SearchPage> {
               child: TextField(
                 controller: _controller,
                 onSubmitted: _onSearch,
+                style: TextStyle(
+                  // 用户输入文字颜色
+                  color: Theme.of(context).textTheme.bodyMedium?.color,
+                ),
                 decoration: InputDecoration(
                   hintText: StringsMain.get("input_note_key_word"),
+                  hintStyle: TextStyle(
+                    // 提示文字颜色
+                    color: Theme.of(context).hintColor,
+                  ),
                   prefixIcon: const Icon(Icons.search),
                   suffixIcon: IconButton(
                     onPressed: () => _onSearch(_controller.text),
@@ -74,7 +82,9 @@ class _SearchPageState extends State<SearchPage> {
                     borderSide: BorderSide.none,
                   ),
                   filled: true,
-                  fillColor: Colors.grey.shade100,
+                  fillColor: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.grey[800]  // 深色模式用深灰背景
+                      : Colors.grey[100], // 浅色模式用浅灰背景,
                   contentPadding:
                   const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
                 ),
