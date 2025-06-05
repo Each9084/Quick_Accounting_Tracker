@@ -11,6 +11,7 @@ class VersionTimelinePage extends StatelessWidget {
     VersionLog(version: "v0.2.2", date: "2025-05-16", content: "• 重构 UI，增加视觉效果"),
     VersionLog(version: "v0.2.3", date: "2025-05-20", content: "• 发布自定义键盘版本，符合操作逻辑\n• 解耦\n• 引入 IOC 依赖注入"),
     VersionLog(version: "v0.2.4", date: "2025-05-25", content: "• 引入国际化\n• 优化缓存，节省性能"),
+    VersionLog(version: "v0.2.4", date: "2025-06-05", content: "• 修复数据库插入bug\n• 优化黑夜模式场景下颜色显示问题\n• 加入app图标 app名称可随中英文切换"),
   ];
 
   @override
