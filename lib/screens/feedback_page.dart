@@ -54,7 +54,7 @@ class FeedbackPage extends StatelessWidget {
             Card(
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
               elevation: 6,
-              color: Colors.white,
+              color: isDark?Colors.blueGrey:Colors.white,
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(
@@ -84,16 +84,16 @@ class FeedbackPage extends StatelessWidget {
               subtitle:  Text(StringsMain.get("click_into_issueBlock_report")),
               onTap: () => _openGitHubIssues(context),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              tileColor: Colors.indigo.shade50,
+              tileColor: isDark?Colors.blueGrey:Colors.indigo.shade50,
             ),
             const SizedBox(height: 12),
             ListTile(
-              leading: const Icon(Icons.email_outlined, color: Colors.teal),
+              leading:  Icon(Icons.email_outlined, color: isDark?Colors.teal.shade300:Colors.teal),
               title:  Text(StringsMain.get("send_email")),
               subtitle: const Text("each9084@gmail.com"),
               onTap: () => _sendEmail(context),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              tileColor: Colors.indigo.shade50,
+              tileColor: isDark?Colors.blueGrey:Colors.indigo.shade50,
             ),
             const SizedBox(height: 12),
             ListTile(
@@ -111,7 +111,7 @@ class FeedbackPage extends StatelessWidget {
                 }
               },
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              tileColor: Colors.indigo.shade50,
+              tileColor: isDark?Colors.blueGrey:Colors.indigo.shade50,
             ),
 
           ],

@@ -67,7 +67,7 @@ class _SummaryCardState extends State<SummaryCard>
                     ),
                     const SizedBox(height: 6),
                     Text(
-                      "£ ${total.toStringAsFixed(2)}",
+                      StringsMain.get("money_sign")+"${total.toStringAsFixed(2)}",
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 36,

@@ -19,6 +19,8 @@ class _CategoryManagerPageState extends State<CategoryManagerPage> {
   bool _isLoading = true;
   int? _userId;
 
+
+
   @override
   void initState() {
     super.initState();
@@ -143,12 +145,12 @@ class _CategoryManagerPageState extends State<CategoryManagerPage> {
         width: 100,
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
-          color: Colors.white,
-          border: Border.all(color: Colors.grey.shade200),
+          color: Theme.of(context).brightness == Brightness.dark?Colors.grey.shade800:Colors.white,
+          border: Border.all(color: Theme.of(context).brightness == Brightness.dark?Colors.grey.shade700:Colors.grey.shade200),
           borderRadius: BorderRadius.circular(14),
           boxShadow: [
             BoxShadow(
-              color: Colors.grey.shade100,
+              color: Theme.of(context).brightness == Brightness.dark?Colors.black.withOpacity(0.15):Colors.grey.shade100,
               blurRadius: 6,
               offset: const Offset(2, 3),
             ),
@@ -171,7 +173,7 @@ class _CategoryManagerPageState extends State<CategoryManagerPage> {
             const SizedBox(height: 6),
             if (isSystem)
                Text(StringsMain.get("system"),
-                  style: TextStyle(fontSize: 10, color: Colors.grey))
+                  style: TextStyle(fontSize: 10, color: Theme.of(context).brightness == Brightness.dark?Colors.white38:Colors.grey))
             else ...[
               Text(
                 StringsMain.get("custom"),

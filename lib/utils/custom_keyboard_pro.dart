@@ -21,6 +21,7 @@ class CustomKeyboardPro extends StatelessWidget {
   //回调函数字段，用来响应运算符按钮（+ 或 -）点击事件。
   final void Function(String) onOperatorTap;
 
+
   const CustomKeyboardPro({
     super.key,
     required this.operator,
@@ -38,7 +39,9 @@ class CustomKeyboardPro extends StatelessWidget {
       /* height: double.infinity,
       width: double.infinity,*/
       padding: EdgeInsets.all(1),
-      color: Colors.grey.shade100,
+      color: Theme.of(context).brightness == Brightness.dark
+          ? Colors.grey.shade800  // 深色主题背景
+          : Colors.grey.shade100, // 浅色主题背景,
       child: LayoutBuilder(
         builder: (context, constraints) {
           final keyHeight = (constraints.maxHeight - 40) / 4;

@@ -59,7 +59,14 @@ class _NoteInputBarState extends State<NoteInputBar> {
         child: Text(
           text.isEmpty ? StringsMain.get("click_to_add_note") : text,
           style: TextStyle(
-            color: text.isEmpty ? Colors.blueGrey : Colors.black87,
+            color: text.isEmpty
+                ? (Theme.of(context).brightness == Brightness.dark
+                ? Colors.white70
+                : Colors.blueGrey)
+                : (Theme.of(context).brightness == Brightness.dark
+                ? Colors.white
+                : Colors.black87),
+
             fontSize: 15,
           ),
           overflow: TextOverflow.ellipsis,

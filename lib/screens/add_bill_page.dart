@@ -291,7 +291,9 @@ class _AddBillPageState extends State<AddBillPage> {
 
       if (user == null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(StringsMain.get("no_active_users_found")), backgroundColor: Colors.redAccent),
+          SnackBar(
+              content: Text(StringsMain.get("no_active_users_found")),
+              backgroundColor: Colors.redAccent),
         );
         return;
       }
@@ -359,8 +361,22 @@ class _AddBillPageState extends State<AddBillPage> {
                                 isIncome,
                               ],
                               children: [
-                                Text(StringsMain.get("expense")),
-                                Text(StringsMain.get("income")),
+                                Text(
+                                  StringsMain.get("expense"),
+                                  style: TextStyle(
+                                      color: Theme.of(context).brightness ==
+                                              Brightness.dark
+                                          ? Colors.white
+                                          : Colors.black),
+                                ),
+                                Text(
+                                  StringsMain.get("income"),
+                                  style: TextStyle(
+                                      color: Theme.of(context).brightness ==
+                                              Brightness.dark
+                                          ? Colors.white
+                                          : Colors.black),
+                                ),
                               ],
                               borderRadius: BorderRadius.circular(10),
                               selectedColor: Colors.white,
@@ -389,14 +405,17 @@ class _AddBillPageState extends State<AddBillPage> {
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Icon(Icons.calendar_month_outlined),
+                              Icon(
+                                Icons.calendar_month_outlined,
+                                color: Theme.of(context).brightness == Brightness.dark?Colors.white:Colors.black,
+                              ),
                               SizedBox(
                                 height: 4,
                               ),
                               Text(
                                 "${_formatDateTime(_selectedDate)}",
                                 style: TextStyle(
-                                  color: Colors.black,
+                                  color: Theme.of(context).brightness == Brightness.dark?Colors.white:Colors.black,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),

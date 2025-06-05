@@ -24,6 +24,8 @@ class MonthlyBillView extends StatelessWidget {
     //结构为: "2025-05-26": [bill1, bill2],
     final grouped = DateHelper.groupBillsByDay(bills);
 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     //返回所有的键(日期字符串)为list,得到了一个包含所有日期的列表。
     //sort() 与compareTo按降序 (从大:最新 到 小:最旧)对这些日期进行排序
     //compareTo 比较两个字符串,如果 b 在字典顺序上大于 a，则返回一个正数
@@ -43,10 +45,10 @@ class MonthlyBillView extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: Text(
                 DateHelper.getLocalizedDayLabel(dayKey, context),
-                style: const TextStyle(
+                style:  TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black87,
+                  color: isDark?Colors.white:Colors.black87,
                 ),
               ),
             ),
